@@ -114,6 +114,7 @@ public class Prueba {
 
         int largoMat = 5;
         String jugada;
+        boolean tableroRotado = false;
 
         //Veo si es un jugaor sólo
         //Selección de jugadores y arranque Partida. ******************************************
@@ -124,19 +125,19 @@ public class Prueba {
 
         } else {
 
-            Jugador jugador1 = miMenu.seleccionarJugadoresPartida("Primer",
-                    miSistema.getListaJugadores(), null);
-            Jugador jugador2 = miMenu.seleccionarJugadoresPartida("Segundo",
-                    miSistema.getListaJugadores(), jugador1);
+            Jugador jugador1 = miMenu.seleccionarJugadoresPartida("Primer", miSistema.getListaJugadores(), null);
+            Jugador jugador2 = miMenu.seleccionarJugadoresPartida("Segundo",miSistema.getListaJugadores(), jugador1);
             Partida miPartida = new Partida(jugador1, jugador2, 1, largoMat);
 
             //Mostrar tablero y datos de los jugadores.
             do {
                 //CICLO DE PARTIDA ##################################################
                 //Dibujo del Tablero
-                miMenu.mostrarMensaje("Tablero - INVERSIONES ", "");
-                drawTablero.draw(miPartida.getTablero().getMatrizTablero(), false);//muestro la estadística
-
+                miMenu.mostrarMensaje(" *** JUEGO  INVERSIONES ***", "");
+                miMenu.mostrarMensaje("(X)Abandonar - (R)Rotar tablero - (E)Ofrecer empate - (Y)Ayuda - (H)Historial", "");
+                drawTablero.draw(miPartida.getTablero().getMatrizTablero(), tableroRotado);//Dibujo el tablero
+                tableroRotado = false;
+                
                 //Dibujo de status de la partida.
                 drawPartida.datos(miPartida);
 
@@ -144,33 +145,67 @@ public class Prueba {
                 jugada = miMenu.ingresarMovimiento();
 
                 //Si un jugador quiere abandonar
+                switch(jugada){
+
+                    case "X": //Abandonar
+                        boolean abandonar;
+                        abandonar = miMenu.confimaMensaje("¿Está seguro que desea abandonar la partida?", "");
+                        if(abandonar){
+                            miMenu.mostrarMensaje(miPartida.abandonar(),"error");
+                        }
+                        break;
+
+                    case "R": //Rotar Tablero
+                        tableroRotado = true;
+                        break;
+                        
+                    case "E": //Ofrecer empate
+                        boolean empate;
+                        empate = miMenu.confimaMensaje("¿Está seguro que desea ofrecer un empate?", "");
+                        if(empate){
+                            miPartida.alternarTurno();
+                            drawPartida.datos(miPartida);
+                            empate = miMenu.confimaMensaje("¿Desea aceptar empatar la partida?", "");
+                            if(empate){
+                                miPartida.setEmpate();
+                                miMenu.mostrarMensaje("La partida terminó empatada!!", "");
+                            }else{
+                                miPartida.alternarTurno();
+                                miMenu.mostrarMensaje("Empate rechazado!!!", "error");
+                            }
+                        }
+                        break;
+                        
+                    case "Y": //Ayuda
+                        break;
+                        
+                    case "H": //Historial
+                        break;
+                        
+                    default: //Si no es una opción especial, entonces es una jugada
+                        miPartida.ingresarJugada(jugada);
+                        //si la jugada no es válida, se muestra el error y vuelve al "do" sin cambiar el turno
+                }
+                
                 //Si nadie Abandona o no hay ganador vuelve al "do"
-            } while ((miPartida.terminoPartida() == 0)); //mientra haya jugadores con fichas.
+            } while (!miPartida.terminoPartida());
 
             //FIN PARTIDA #############################################################
-            /*
-             Asignamos el resultado al ranking.
-             */
-            if (miPartida.terminoPartida() == 1) {
-                miPartida.getJugador1().setPartidas(1, 0, 0);
-                miPartida.getJugador2().setPartidas(0, 1, 0);
-                miMenu.showCabeceraMenu(true, "EL GANADOR ES: " + (miPartida.getJugador1().getAlias()));
+            if (miPartida.terminoPartida()) {
+                
+                //Si hay ganador
+                if (miPartida.getEstado() !=3){
+                    System.out.println("\n");
+                    miMenu.showCabeceraMenu(true, "EL GANADOR ES: " + (miPartida.getGanador().getAlias()));
+                    System.out.println("\n");
+                    
+                //Si es empate
+                }else{
+                    System.out.println("\n");
+                    miMenu.showCabeceraMenu(true, "PARTIDA EMPATADA !!!");
+                    System.out.println("\n");
+                }
             }
-            if (miPartida.terminoPartida() == 2) {
-                miPartida.getJugador2().setPartidas(1, 0, 0);
-                miPartida.getJugador1().setPartidas(0, 1, 0);
-                System.out.println("\n");
-                miMenu.showCabeceraMenu(true, "EL GANADOR ES: " + (miPartida.getJugador2().getAlias()));
-                System.out.println("\n");
-            }
-            if (miPartida.terminoPartida() == 3) {
-                miPartida.getJugador2().setPartidas(0, 0, 1);
-                miPartida.getJugador1().setPartidas(0, 0, 1);
-                System.out.println("\n");
-                miMenu.showCabeceraMenu(true, "PARTIDA EMPATADA");
-                System.out.println("\n");
-            }
-
         }
         /*
          Fin Partida retorno menú principal

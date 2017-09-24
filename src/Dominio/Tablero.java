@@ -69,21 +69,20 @@ public class Tablero {
    
     
     /* METODOS *************************************/
-    public boolean moverFicha(String jugada, int turno) {
+    public String moverFicha(String jugada, int turno) {
         /*
-        Coloco la ficha en la posición solicitada
-        Devuelvo false si da error
+            Coloco la ficha en la posición solicitada
+            Devuelvo false si da error
         */
         
-        boolean jugadaOk;
+        String jugadaOk;
         
         //valido la jugada 
         jugadaOk = validarJugada(jugada, turno);
-
         return jugadaOk;
     }
 
-    public boolean validarJugada(String jugada, int turno) {
+    public String validarJugada(String jugada, int turno) {
         /*Este método valida la jugada contolando:
              - que no exista ganador.
              - que quien juega tenga cubos.
@@ -97,11 +96,12 @@ public class Tablero {
             
             if (this.getMatrizTablero()[fila][col] == 0){
             
-        }
+            }
             
         }
-        boolean jugadaOk;
-        jugadaOk = false;
+        
+        String jugadaOk;
+        jugadaOk = "OK";
         int[] coordenadas1;
         int[] coordenadas2;
         return jugadaOk;

@@ -49,7 +49,7 @@ public class drawMenu {
         unMenuNav = menuNav;
     }
 
-    public int getMenuBrousing() {
+    public int getMenuNav() {
         return menuNav;
     }
 
@@ -147,6 +147,8 @@ public class drawMenu {
 
     public void mostrarMensaje(String mensaje, String msjColor) {
 
+        String lineaDiv = "##################################################################";
+        
         //Centrar mensaje
         mensaje = centrarTituloMenu(mensaje, 62);
         mensaje = mensaje.replaceAll("#", " ");
@@ -168,12 +170,15 @@ public class drawMenu {
             default:
                 msjColor = colorBlue;
         }
-
-        System.out.print(""
+        if(mensaje.length()>62){
+            System.out.print(""+ "\n" + msjColor + mensaje + "\n");
+        }else{
+            System.out.print(""
                 + "\n" + msjColor + ""
-                + "\n" + msjColor + "##################################################################"
+                + "\n" + msjColor + lineaDiv
                 + "\n" + msjColor + "##" + mensaje + msjColor + "##"
-                + "\n" + msjColor + "##################################################################");
+                + "\n" + msjColor + lineaDiv);
+        }
     }
 
     public int showMenuPrincipal(int cantOpciones) {
@@ -315,11 +320,11 @@ public class drawMenu {
     /*
      Seleccionar Jugadores para Partida:
      -----------------------------------
-     Si no tengo al cantidad minima de jugadores en el sismtea da error y devuelve jugador=null
-     si tengo el minimo o mas retorno el jugador seleccionado.
+     Si no tengo la cantidad minima de jugadores en el sistema da error y devuelve jugador=null
+     si tengo el minimo o más, retorno el jugador seleccionado.
      */
     public Jugador seleccionarJugadoresPartida(String turno, ArrayList unaListaJugadores, Jugador otroJugador) {
-        int numJugador = Integer.MIN_VALUE;//Numero del Jugador en la lista
+        int numJugador;//Numero del Jugador en la lista
         Jugador unJugador = null;
 
         mostrarListaJugadores(unaListaJugadores);
@@ -327,13 +332,14 @@ public class drawMenu {
         do {
             mostrarMensaje("Digite el número del " + turno + " Jugador:", colorBlack);
             numJugador = this.leerInt("\nOpción: ");
-            unJugador = (Jugador) unaListaJugadores.get(numJugador - 1);
-
-            if (otroJugador != null && unJugador.equals(otroJugador)) {
-                System.out.println("El Jugador " + otroJugador.getAlias() + "ya fue elegido!!!");
-                numJugador = 0;
+            if ((numJugador>0) && (numJugador <= unaListaJugadores.size()) ){
+                unJugador = (Jugador) unaListaJugadores.get(numJugador - 1);
+                
+                if (otroJugador != null && unJugador.equals(otroJugador)) {
+                    System.out.println("El Jugador " + otroJugador.getAlias() + "ya fue elegido!!!");
+                    numJugador = 0;
+                }
             }
-
         } while ((numJugador < 1) || numJugador > unaListaJugadores.size());
 
         return unJugador;

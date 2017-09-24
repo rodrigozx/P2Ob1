@@ -11,21 +11,27 @@ import java.util.*;
 
 public class Partida {
 
+    /*Estado de la partida.
+     0- No hay estado
+     1- Ganador Jugador1
+     2- Ganador Jugador2
+     3- Hay Empate
+     */
     private Tablero tablero;
     private Jugador jugador1;
     private Jugador jugador2;
-    private Jugador ganador;
+    private int estado;
     private int turno;
-    
+
 
     /* CONSTRUCTOR POR PARAMETROS *************************************/
     public Partida(Jugador jugador1, Jugador jugador2, int turno, int largoMat) {
         this.jugador1 = jugador1;
         this.jugador2 = jugador2;
         this.turno = turno;
-        int [][] mat = new int [largoMat][largoMat]; 
+        int[][] mat = new int[largoMat][largoMat];
         this.tablero = new Tablero(mat);
-        this.ganador = null;
+        this.estado = 0;
     }
 
     /* GETS Y SETS *************************************/
@@ -61,60 +67,100 @@ public class Partida {
         this.tablero = tablero;
     }
 
-    public Jugador getGanador() {
-        return ganador;
+    public int getEstado(){
+        return this.estado;
     }
-
-    public void setGanador(Jugador ganador) {
-        this.ganador = ganador;
+    
+    public void setEstado(int estadoP) {
+        this.estado = estadoP;
     }
 
     /* METODOS *************************************/
-    public int terminoPartida() {
-        /*Valida el estado de la partida.
-         si alguno de los jugadores no tiene más cubos, entonces terminó la partida.
-         0-No hay ganador
-         1-Ganador Jugador1
-         2-Ganador Jugador2
+    public String ingresarJugada(String jugada) {
+
+        String jugadaOk;
+
+        jugadaOk = this.getTablero().moverFicha(jugada, this.getTurno());
+
+        //Si la jugada fue correcta cambio de turno
+        if (jugadaOk.equals("OK")) {
+            this.alternarTurno();
+        }
+
+        return jugadaOk;
+    }
+
+    public void alternarTurno() {
+        if (this.getTurno() == 1) {
+            this.setTurno(2);
+        } else {
+            this.setTurno(1);
+        }
+    }
+
+    public boolean terminoPartida() {
+         /*Valida el estado de la partida.
+         0- No hay estado
+         1- Ganador Jugador1
+         2- Ganador Jugador2
+         3- Hay Empate
          */
-        int estado = 0;
-//        if (!(this.tablero.getCantCubosJug1() == 0 && (this.tablero.getCantCubosJug2() == 0))) {
-//            estado = ganadorPartida();
-//        }
-
-        // si el estado permanece en 0 entonces no hay ganador.
-        return estado;
-
+        boolean termino;
+        if (this.getEstado()!= 0){
+            termino = true;
+        }else{
+            termino = false;
+        }
+        return termino;
     }
 
-    public int ganadorPartida() {
-
-        //calculo las fichas en el tablero
-        int estado = 0;
-
-        return estado;
+    public void setEmpate() {
+        
+        this.setEstado(3);//Empate
+        
+        //A cada jugador le seteo un empate más...
+        this.getJugador1().setPartidas(this.getJugador1().getPartidas()[0], this.getJugador1().getPartidas()[1], this.getJugador1().getPartidas()[0]+1);
+        this.getJugador2().setPartidas(this.getJugador2().getPartidas()[0], this.getJugador2().getPartidas()[1], this.getJugador2().getPartidas()[0]+1);
     }
-
-//    public void restaCubos(int cantCubos, boolean esResta) {
-//
-//        int cantCubosActual;
-//        //Me fijo de quien es el turno
-//        if (this.getTurno() == 1) { //jugador 1
-//            cantCubosActual = this.getTablero().getCantCubosJug1();
-//            if (esResta) {
-//                this.getTablero().setCantCubosJug1(cantCubosActual - cantCubos);
-//            } else { //si no los resta, los está sumando
-//                this.getTablero().setCantCubosJug1(cantCubosActual + cantCubos);
-//            }
-//        } else { // es el jugador 2
-//            cantCubosActual = this.getTablero().getCantCubosJug2();
-//            if (esResta) {
-//                this.getTablero().setCantCubosJug2(cantCubosActual - cantCubos);
-//            } else { //si no los resta, los está sumando
-//                this.getTablero().setCantCubosJug2(cantCubosActual + cantCubos);
-//            }
-//        }
-//    }
+    
+    //Abandona siempre el jugador que está de turno
+    public String abandonar() {
+        String retorno;
+        
+        if (this.getTurno() == 1) {
+            //Jugador 1 Abandona.
+            retorno = this.setGanador(2);
+            if(retorno.equals("OK")){
+                retorno = "El jugador " + this.getJugador1().getAlias() + "abandona la partida.";
+            }
+        
+        }else{
+            //Jugador 2 Abandona.
+            retorno = this.setGanador(1);
+            if(retorno.equals("OK")){
+                retorno = "El jugador " + this.getJugador2().getAlias() + "abandona la partida.";
+            }
+        }
+        return retorno;
+    }
+    
+    public String setGanador(int ganador) {
+        String retorno;
+        
+        if(ganador == 1){
+            this.getJugador1().setPartidas(this.getJugador1().getPartidas()[0]+1, this.getJugador1().getPartidas()[1], this.getJugador1().getPartidas()[0]);
+            this.getJugador2().setPartidas(this.getJugador2().getPartidas()[0], this.getJugador2().getPartidas()[1]+1, this.getJugador2().getPartidas()[0]);
+            this.setEstado(1);            
+        }else if(ganador == 2){
+            this.getJugador1().setPartidas(this.getJugador1().getPartidas()[0], this.getJugador1().getPartidas()[1]+1, this.getJugador1().getPartidas()[0]);
+            this.getJugador2().setPartidas(this.getJugador2().getPartidas()[0]+1, this.getJugador2().getPartidas()[1], this.getJugador2().getPartidas()[0]);
+            this.setEstado(2);
+        }else{
+            retorno = "Error. No hay ganador";
+        }
+        retorno = "OK";
+        return retorno;
+    }
 
     public Jugador getJugadorDeTurno(int turno) {
         Jugador elJugador;
@@ -126,29 +172,19 @@ public class Partida {
 
         return elJugador;
     }
-
-    private boolean validaAbandonar(String ingreso) {
-
-        boolean confirmar;
-        if (ingreso.equalsIgnoreCase("X")) {
-            confirmar = true;
-        } else {
-            confirmar = false;
+    
+    public Jugador getGanador() {
+        
+        Jugador ganador;
+        
+        if(this.estado == 1 ){
+            ganador = this.getJugador1();
+        }else if(this.estado == 2){
+            ganador = this.getJugador2();
+        }else{
+            ganador = null;
         }
-        return confirmar;
-    }
-
-    public void abandonar() {
-
-        //Jugador 1 Abandona.
-        if (this.turno == 1) {
-            this.ganador = this.jugador2;
-        }
-        //Jugador 2 Abandona.
-        if (this.turno == 2) {
-            this.ganador = this.jugador1;
-        }
-
+        return ganador;
     }
 
     private int[] ingresarCoordenadas(String coordenada) {
@@ -206,8 +242,5 @@ public class Partida {
         lasCoordendas[1] = laColumna - 1;
         return lasCoordendas;
 
-    }
-
-    
-
+    }    
 }
