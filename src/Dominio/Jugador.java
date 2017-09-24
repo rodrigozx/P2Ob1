@@ -7,9 +7,7 @@
  */
 package Dominio;
 
-import java.util.*;
-
-public class Jugador {
+public final class Jugador {
 
     private String alias;
     private String nombre;
@@ -18,24 +16,17 @@ public class Jugador {
 
     /*
         Significado de posisiones en array de Partidas:
-        pos = 0 -Partidas Ganadas
-        pos = 1 -Partidas Perdidas
-        pos = 2 -Partidas Empatadas
-    */
-    
-    /* CONSTRUCTOR POR DEFECTO *************************************/
-    public Jugador() {
-        this.alias = "Sin Alias";
-        this.nombre = "Sin Nombre";
-        this.edad = 0;
-    }
+        pos = 0 -Partidas ganadas
+        pos = 1 -Partidas perdidas
+        pos = 2 -Partidas empatadas
+     */
 
-    /* CONSTRUCTOR POR PARAMETROS *************************************/
-    public Jugador(String elAlias, String elNombre, int laEdad) {
+ /* CONSTRUCTOR POR PARAMETROS *************************************/
+    public Jugador(String elAlias, String elNombre, int laEdad, int ganadas, int perdidas, int empatadas) {
         this.setAlias(elAlias);
         this.setNombre(elNombre);
         this.setEdad(laEdad);
-        this.setPartidas(0, 0, 0);
+        this.setPartidas(ganadas, perdidas, empatadas);
     }
 
     /* GETS Y SETS *************************************/
@@ -69,11 +60,11 @@ public class Jugador {
         return this.partidas;
     }
 
-    public void setPartidas(int ganada, int perdida, int empatada) {
+    public void setPartidas(int ganadas, int perdidas, int empatadas) {
         int[] ranking = new int[3];
-        ranking[0] = ganada;
-        ranking[1] = perdida;
-        ranking[2] = empatada;
+        ranking[0] = ganadas;
+        ranking[1] = perdidas;
+        ranking[2] = empatadas;
         this.partidas = ranking;
     }
 
@@ -98,11 +89,11 @@ public class Jugador {
         int[] partidasGan = this.getPartidas();
         return Integer.toString(partidasGan[1]);
     }
-    
+
     public String getPartidasEmpatadasToString() {
         int[] partidasGan = this.getPartidas();
         return Integer.toString(partidasGan[2]);
-    }    
+    }
 
     //Defino el toString del Jugador.
     @Override

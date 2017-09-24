@@ -241,7 +241,7 @@ public class drawMenu {
         return edad;
     }
 
-    public void showMenuRanking(ArrayList<Jugador> unaListaJugadores) {
+    public void drawMenuRanking(ArrayList<Jugador> unaListaJugadores) {
         //Ranking de Jugadores
 
         System.out.println(""
@@ -272,8 +272,8 @@ public class drawMenu {
         String linea;
         int espacios;
 
-        mostrarMensaje(padLString("  Posición", 2) //12 
-                + padLString(" Alias", 15)//21
+        mostrarMensaje(padLString(" Posición", 3) //12 
+                + padLString(" Alias", 10)//21
                 + padLString(" Ganadas", 2) //10
                 + padLString(" Perdidas", 2)//11
                 + padLString(" Empates", 2)//11
@@ -285,12 +285,20 @@ public class drawMenu {
             pos = "-    " + Integer.toString(i + 1);
 
             linea = (""
-                    + padLStringGuion(pos, 14 - pos.length())
-                    + padLStringGuion(unaListaJugadores.get(i).getAlias(), 25 - unaListaJugadores.get(i).getAlias().length())
-                    + padLStringGuion(Integer.toString(unaListaJugadores.get(i).getPartidas()[0]), (10 - (unaListaJugadores.get(i).getPartidas()[0])))
-                    + padLStringGuion(Integer.toString(unaListaJugadores.get(i).getPartidas()[1]), (10 - (unaListaJugadores.get(i).getPartidas()[1]))))
-                    + padLStringGuion(Integer.toString(unaListaJugadores.get(i).getPartidas()[2]), (5 - (unaListaJugadores.get(i).getPartidas()[2])));
-
+                    /*Posición*/
+                    + padLStringGuion(pos, 16 - pos.length())
+                    
+                    /*Alias*/
+                    + padLStringGuion(unaListaJugadores.get(i).getAlias(), 20 - unaListaJugadores.get(i).getAlias().length())
+                    
+                    /*Ganadas*/
+                    + padLStringGuion(Integer.toString(unaListaJugadores.get(i).getPartidas()[0]), (11 - Integer.toString(unaListaJugadores.get(i).getPartidas()[0]).length()))
+                    /*Perdidas*/
+                    + padLStringGuion(Integer.toString(unaListaJugadores.get(i).getPartidas()[1]), (11 - Integer.toString(unaListaJugadores.get(i).getPartidas()[1]).length()))
+                    /*Empatadas*/
+                    + padLStringGuion(Integer.toString(unaListaJugadores.get(i).getPartidas()[2]), (8 - Integer.toString(unaListaJugadores.get(i).getPartidas()[2]).length()))
+                    );
+            
             espacios = (62 - linea.length() + 2);
             linea = padLString(linea, espacios);
             linea = (linea.substring(1, linea.length()));
