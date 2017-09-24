@@ -39,6 +39,7 @@ public class Tablero {
         //La cantidad de fichas de cada jugador es igual al largo de la matriz
         this.cantFichasJug1 = matrizTablero.length;
         this.cantFichasJug2 = matrizTablero.length;
+        tableroInicial();
     }
 
     /* GETS Y SETS *************************************/
@@ -68,7 +69,7 @@ public class Tablero {
    
     
     /* METODOS *************************************/
-    public boolean colocarFicha(String jugada, int turno) {
+    public boolean moverFicha(String jugada, int turno) {
         /*
         Coloco la ficha en la posición solicitada
         Devuelvo false si da error
@@ -109,7 +110,18 @@ public class Tablero {
     public void tableroInicial(){
         for (int i = 0; i < this.matrizTablero.length; i++) {
             for (int j = 0; j < this.matrizTablero[i].length; j++) {
-                this.matrizTablero[i][j] = 0;
+                
+                if(i == 0){
+                    // 21 Es torre de jugador 2
+                    this.matrizTablero[i][j] = 21;
+                }else if (i == this.matrizTablero.length-1){
+                    // 11 Es torre de jugador 11
+                    this.matrizTablero[i][j] = 11;
+                }else{
+                    // Sino esta vacío
+                    this.matrizTablero[i][j] = 0;    
+                }
+                
             }
         }
     }

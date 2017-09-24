@@ -69,14 +69,13 @@ public class Sistema {
     //Método que valida que el sistema tenga al menos 1 Jugador.
     public boolean numJugadoresMinimos() {
         boolean retorno = false;
-        if (this.getListaJugadores().size() >= 1) {
+        if (this.getListaJugadores().size() >= 2) {
             retorno = true;
         }
         return retorno;
     }
 
     //Método que devuelve cantidad de Jugadores registrados.
-
     public int numJugadoresRegistrados() {
         int retorno = this.getListaJugadores().size();
         return retorno;

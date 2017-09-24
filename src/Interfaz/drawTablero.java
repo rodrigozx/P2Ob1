@@ -1,9 +1,9 @@
-
-/* ******************************************************
- * Clase: showTablero
+/**
+ * ***************************************************
+ * Clase: drawTablero
  *
- * @author Rodrigo Blanco - nro. 151251 - Programación II
- * ******************************************************
+ * @author Rodrigo Blanco - 151251 - Programación II
+ * *************************************************
  */
 package Interfaz;
 
@@ -34,6 +34,9 @@ public class drawTablero {
             filaImp = 1;
         }
 
+        //Salto de línea
+        System.out.println("");
+        
         //Recorro las filas (son el doble de filas porque tengo de dibujar los separadores)
         for (int i = 0; i < largoDrawMat; i++) {
 
