@@ -15,28 +15,28 @@ public class Color {
 
         switch (nombreColor) {
             case "NEGRO":
-                impColor = "[0";
+                impColor = "[0;00m";
                 break;
             case "ROJO":
-                impColor = "[31";
+                impColor = "[0;31m";
                 break; //31
             case "VERDE":
-                impColor = "[32";
+                impColor = "[0;32m";
                 break;  //32
             case "AMARILO":
-                impColor = "[33";
+                impColor = "[0;33m";
                 break; //33 
             case "AZUL":
-                impColor = "[34";
+                impColor = "[0;34m";
                 break; //34
             case "MAGENTA":
-                impColor = "[35";
+                impColor = "[0;35m";
                 break;//35
             case "CYAN":
-                impColor = "[36";
+                impColor = "[0;36m";
                 break;//36
             case "BLANCO":
-                impColor = "[37";
+                impColor = "[0;37m";
                 break;//37
                 
             //FONDOS COLOREADOS
@@ -97,7 +97,7 @@ public class Color {
                 break;//; //Rojo y fondo blanco                
             //SIN FORMATOS NI COLORES
             case "SINFORMATO": 
-                impColor =  "[00;00m";;
+                impColor =  "[00;00m";
                 break;//0
                 
             default:

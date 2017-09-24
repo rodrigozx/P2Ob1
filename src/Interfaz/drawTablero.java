@@ -8,6 +8,7 @@
 package Interfaz;
 
 import java.util.Arrays;
+import Interfaz.Color;
 
 public class drawTablero {
 
@@ -16,6 +17,7 @@ public class drawTablero {
 
         String colorNegro = Color.getColor("NEGRO");
         String colorVerde = Color.getColor("VERDE");
+        
         int[][] mat = new int[matriz.length][matriz[0].length];
         mat = matriz;
         boolean arco = false;
@@ -169,10 +171,17 @@ public class drawTablero {
         // Si el rango está entre 11 y 20, entonces es el jugador1
         // sino es el jugador2
         int jugador = ficha/10;
+        
         if(jugador == 1){
-            charFicha = colorJug1;
+              charFicha = colorJug1;
+              ficha -=10;
         }else{
-            charFicha = colorJug2;
+            if(jugador==0){
+                charFicha = colorNegro;
+            }else{
+                charFicha = colorJug2;
+                ficha-=20;
+            }
         }
         
         switch (ficha) {
@@ -183,11 +192,10 @@ public class drawTablero {
                 charFicha += "A";
                 break;
             default: //no tiene valor
-                charFicha = colorNegro + " ";
+                charFicha += " ";
                 break;
         }
-        System.out.print(charFicha);
-
+        System.out.print( charFicha);
     }
 
     private static int[][] rotarMat(int[][] matriz) {
