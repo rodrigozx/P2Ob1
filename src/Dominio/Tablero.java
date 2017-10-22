@@ -5,7 +5,6 @@
  * @author Rodrigo Blanco - nro. 151251 - Programación II
  * ******************************************************
  */
-
 package Dominio;
 
 import java.util.*;
@@ -35,7 +34,7 @@ public class Tablero {
     /* CONSTRUCTOR POR PARAMETROS *************************************/
     public Tablero(int[][] matrizTablero) {
         this.matrizTablero = matrizTablero;
-        
+
         //La cantidad de fichas de cada jugador es igual al largo de la matriz
         this.cantFichasJug1 = matrizTablero.length;
         this.cantFichasJug2 = matrizTablero.length;
@@ -50,7 +49,7 @@ public class Tablero {
     public void setMatrizTablero(int[][] matrizTablero) {
         this.matrizTablero = matrizTablero;
     }
-    
+
     public int getCantFichasJug1() {
         return this.cantFichasJug1;
     }
@@ -66,64 +65,87 @@ public class Tablero {
     public void setCantFichasJug2(int cantFichasJug2) {
         this.cantFichasJug2 = cantFichasJug2;
     }
-   
-    
+
     /* METODOS *************************************/
-    public String moverFicha(String jugada, int turno) {
-        /*
-            Coloco la ficha en la posición solicitada
-            Devuelvo false si da error
-        */
-        
-        String jugadaOk;
-        
-        //valido la jugada 
-        jugadaOk = validarJugada(jugada, turno);
-        return jugadaOk;
-    }
-
-    public String validarJugada(String jugada, int turno) {
-        /*Este método valida la jugada contolando:
-             - que no exista ganador.
-             - que quien juega tenga cubos.
-             - que la posición dónde se quiere colocar el cubo esté vacía.
-             - que la posición tenga cubos adyascentes (excepto 1ra. jugada).
-             - que no se forme un cuadrado de 2x2.
-         */
-        if (this.getCantFichasJug1()>0 && this.getCantFichasJug2()>0){
-            int fila=0;
-            int col=0;
-            
-            if (this.getMatrizTablero()[fila][col] == 0){
-            
-            }
-            
-        }
-        
-        String jugadaOk;
-        jugadaOk = "OK";
-        int[] coordenadas1;
-        int[] coordenadas2;
-        return jugadaOk;
-    }
-
-    public void tableroInicial(){
+    public void tableroInicial() {
         for (int i = 0; i < this.matrizTablero.length; i++) {
             for (int j = 0; j < this.matrizTablero[i].length; j++) {
-                
-                if(i == 0){
+
+                if (i == 0) {
+                    // 11 Es torre de jugador 1
+                    this.matrizTablero[i][j] = 11;
+                } else if (i == this.matrizTablero.length - 1) {
                     // 21 Es torre de jugador 2
                     this.matrizTablero[i][j] = 21;
-                }else if (i == this.matrizTablero.length-1){
-                    // 11 Es torre de jugador 11
-                    this.matrizTablero[i][j] = 11;
-                }else{
+                } else {
                     // Sino esta vacío
-                    this.matrizTablero[i][j] = 0;    
+                    this.matrizTablero[i][j] = 0;
                 }
-                
             }
         }
     }
-    
+
+    //Ingresar movimiento de ficha
+    public String validarMovimiento(int iP1, int jP1, int iP2, int jP2, int turno) {
+
+        String retorno = "OK";
+        int pos1;
+        int pos2;
+        int jugPos1;
+        int jugPos2;
+
+        //Ya vienen validadas las coordenadas dentro del tablero.
+        System.out.println("origen:" + iP1 + jP1);
+        System.out.println("destino:" + iP2 + jP2);
+        System.out.println("Turno:" + turno);
+
+        pos1 = this.getMatrizTablero()[iP1][jP1];
+        jugPos1 = pos1 / 10;
+        System.out.println("Pos1" + pos1);
+        System.out.println("jugPos1" + jugPos1);
+        pos2 = this.getMatrizTablero()[iP2][jP2];
+        jugPos2 = pos2 / 10;
+        System.out.println("Pos2" + pos2);
+        System.out.println("jugPos2" + jugPos2);
+        if (jugPos1 != turno || jugPos2 == turno) {
+            retorno = "Error:";
+            if (jugPos1 == 0) {
+                retorno += "La posición inicial está vacía";
+            } else {
+                retorno += "La ficha de la posición inicial no corresponde al jugador";
+            }
+            if (jugPos2 == turno) {
+                retorno += "\nLa ficha en la posición final no puede ser del mismo jugador";
+            }
+        } else {
+
+        }
+        
+        System.out.println("");
+        this.imprimir();
+        
+        return retorno;
+    }
+
+    public String moverFicha(int iP1, int jP1, int iP2, int jP2) {
+
+        String retorno = "OK";
+
+        this.getMatrizTablero();
+        //Ya vienen validadas las coordenadas.
+        System.out.println("origen:" + iP1 + jP1);
+        System.out.println("destino:" + iP2 + jP2);
+
+        return retorno;
+    }
+
+    public void imprimir() {
+        for (int i = 0; i < this.matrizTablero.length; i++) {
+            for (int j = 0; j < this.matrizTablero[i].length; j++) {
+                System.out.print(this.getMatrizTablero()[i][j] + " ");
+            }
+            System.out.println("");
+        }
+    }
+
 }

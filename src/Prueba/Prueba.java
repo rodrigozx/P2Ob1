@@ -140,6 +140,7 @@ public class Prueba {
                 miMenu.mostrarMensaje(" *** JUEGO  INVERSIONES ***", "");
                 miMenu.mostrarMensaje("(X)Abandonar - (R)Rotar tablero - (E)Ofrecer empate - (Y)Ayuda - (H)Historial", "");
                 drawTablero.draw(miPartida.getTablero().getMatrizTablero(), especial[1]);//Dibujo el tablero
+                especial[1] = false;//Seteo el tablero normal nuevamente
                 
                 //Dibujo de status de la partida.
                 drawPartida.datos(miPartida);
@@ -183,62 +184,114 @@ public class Prueba {
         return especial;
     }
 
+    //Primera Varlidación de la entrada de la jugada.
     public static boolean[] validaEntradaJugada(String jugada, Partida laPartida, drawMenu elMenu) {
-         
-        boolean[] especial = new boolean[5];
-
-        //Si la jugada esta vacía o el largo es mayor a 5
-        if (jugada.trim().length() > 5 || jugada.trim().length() < 1) {
-            elMenu.mostrarMensaje("Largo de jugada inválido","error");
+        
+        boolean[] especial = new boolean[5];/*  (0)Abandonar - (1)Rotar tablero - (2)Ofrecer empate - (3)Ayuda - (4)Historial */
+        
+        //Opciones especiales válidas
+        String[] listaOpcionesEspeciales = {"X","R","E","Y","H"};
+        /*
+        Tipos de entradas:
+            - movimiento de fichas:
+                                    A1 A5 //ejemplo
+            - jugadas especiales:   
+                                    (X)Abandonar 
+                                    (R)Rotar tablero
+                                    (E)Ofrecer empate
+                                    (Y)Ayuda
+                                    (H)Historial        
+        */
+        boolean opcionEspecialValida;
+        String mensaje;
+        //Si la jugada esta es de cualquier largo que no sea 1 o 5
+        if ( (jugada.trim().length() != 5) && (jugada.trim().length() != 1) ) {
+            mensaje = "Largo de jugada inválido";
+            elMenu.mostrarMensaje(mensaje, "error");
         
         } else {
-                //Jugadas especiales
-                switch(jugada){
 
-                    case "X": //Abandonar
-                        especial[0] = elMenu.confimaMensaje("¿Está seguro que desea abandonar la partida?", "");
-                        if(especial[0]){
-                            elMenu.mostrarMensaje(laPartida.abandonar(),"error");
-                        }
-                        break;
+            //Verifico si es una opción especial
+            if (jugada.trim().length() == 1){
+                opcionEspecialValida = Arrays.asList(listaOpcionesEspeciales).contains(jugada);
 
-                    case "R": //Rotar Tablero
-                        especial[1] = true;
-                        break;
-                        
-                    case "E": //Ofrecer Empate
-                        especial[2] = elMenu.confimaMensaje("¿Está seguro que desea ofrecer un empate?", "");
-                        if(especial[2]){
-                            laPartida.alternarTurno();
-                            drawPartida.datos(laPartida);
-                            especial[2] = elMenu.confimaMensaje("¿Desea aceptar empatar la partida?", "");
-                            if(especial[2]){
-                                laPartida.setEmpate();
-                                elMenu.mostrarMensaje("La partida terminó empatada!!", "");
-                            }else{
-                                laPartida.alternarTurno();
-                                elMenu.mostrarMensaje("Empate rechazado!!!", "error");
+                if (opcionEspecialValida){
+
+                    //Jugadas especiales
+                    switch(jugada){
+
+                        case "X": //Abandonar
+                            mensaje = "¿Está seguro que desea abandonar la partida?";
+                            especial[0] = elMenu.confimaMensaje(mensaje, "");
+                            
+                            if(especial[0]){
+                                mensaje = laPartida.abandonar();
+                                elMenu.mostrarMensaje(mensaje,"error");
                             }
-                        }
-                        break;
-                        
-                    case "Y": //Ayuda
-                        if (especial[3]){
-                            elMenu.mostrarMensaje("PIDIO AYUDA","error");
-                        }
-                        break;
-                        
-                    case "H": //Historial
-                        if (especial[4]){
-                            elMenu.mostrarMensaje("PIDIO HISTORIAL","error");
-                        }
-                        break;
-                        
-                    default: //Si no es una opción especial, entonces es una jugada
-                        laPartida.ingresarJugada(jugada);
-                        //si la jugada no es válida, se muestra el error y vuelve al "do" sin cambiar el turno
-                }            
+                            break;
 
+                        case "R": //Rotar Tablero
+                            especial[1] = true; //Seteo mostrarlo rotado
+                            break;
+
+                        case "E": //Ofrecer Empate
+                            mensaje = "¿Está seguro que desea ofrecer un empate?";
+                            especial[2] = elMenu.confimaMensaje(mensaje, "");
+                            
+                            //Si confirmó ofrecer empate
+                            if(especial[2]){
+                                laPartida.alternarTurno();
+                                drawPartida.datos(laPartida);
+                                mensaje = "¿Desea aceptar empatar la partida?";
+                                especial[2] = elMenu.confimaMensaje(mensaje, "");
+                                
+                                //Si aceptó el empate
+                                if(especial[2]){
+                                    laPartida.setEmpate();
+                                    mensaje = "La partida terminó empatada!!";
+                                    elMenu.mostrarMensaje(mensaje, "");
+                                }else{
+                                    laPartida.alternarTurno();
+                                    mensaje = "Empate rechazado!!!";
+                                    elMenu.mostrarMensaje(mensaje, "error");
+                                }
+                            }
+                            break;
+
+                        case "Y": //Ayuda
+                            especial[3] = true;
+                            if (especial[3]){
+                                elMenu.mostrarMensaje("PIDIO AYUDA","error");
+                            }
+                            break;
+
+                        case "H": //Historial
+                            especial[4] = true;
+                            if (especial[4]){
+                                elMenu.mostrarMensaje("PIDIO HISTORIAL","error");
+                            }
+                            break;
+
+                        default: //Si no es una opción especial, entonces es una jugada no válida
+                            //No debería entrar nunca en ésta opción
+                            elMenu.mostrarMensaje("Jugada no válida!!!", "error");
+                    }
+                }else{//Si no es una opción especial, entonces es una jugada no válida
+                     elMenu.mostrarMensaje("Jugada no válida!!!", "error");
+                }
+
+            }else{
+
+                if (jugada.trim().length() == 5){
+                    mensaje = laPartida.ingresarJugada(jugada);
+                    if(!mensaje.equals("Ok")){
+                        elMenu.mostrarMensaje(mensaje, "error");
+                    }
+                }else{
+                    //No debería entrar nunca en ésta opción
+                    elMenu.mostrarMensaje("Jugada no válida!!!", "error");
+                }
+            }
         }
         return especial;
     }

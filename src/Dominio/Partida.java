@@ -76,21 +76,7 @@ public class Partida {
     }
 
     /* METODOS *************************************/
-    public String ingresarJugada(String jugada) {
-
-        String jugadaOk;
-
-        jugadaOk = this.getTablero().moverFicha(jugada, this.getTurno());
-
-        //Si la jugada fue correcta cambio de turno
-        if (jugadaOk.equals("OK")) {
-            this.alternarTurno();
-        }
-
-        return jugadaOk;
-    }
-
-    public void alternarTurno() {
+   public void alternarTurno() {
         if (this.getTurno() == 1) {
             this.setTurno(2);
         } else {
@@ -187,20 +173,50 @@ public class Partida {
         return ganador;
     }
 
-    private int[] ingresarCoordenadas(String coordenada) {
+    public String ingresarJugada(String jugada) {
+
+        String retorno;
+
+        retorno = this.validarFormatoJugada(jugada);
+
+        //Valido todo el formato de la jugada
+        if (retorno.substring(0, 2).equals("OK")) {
+            int iP1 = Integer.parseInt(retorno.substring(2,3));
+            int jP1 = Integer.parseInt(retorno.substring(3,4));
+            int iP2 = Integer.parseInt(retorno.substring(4,5));
+            int jP2 = Integer.parseInt(retorno.substring(5,6));
+            
+            // Si el formato está correcto, tengo que validar el movimiento
+            // También valido que el movimiento de la ficha sea del jugador, por eso paso el turno.
+            retorno = this.getTablero().validarMovimiento(iP1, jP1, iP2, jP2, this.getTurno());
+            
+            if (retorno.substring(0, 2).equals("OK")){
+                System.out.println("Retorno ingresarJugada:" + retorno);
+//                this.alternarTurno();
+            }
+        }
+
+        return retorno;
+    }
+ 
+    private String validarFormatoCoordenadas(String coordenada) {
         /*Posiciones:
-         0-Filas
-         1-Columnas
-         */
-        int[] lasCoordendas = new int[2];
+        0-Filas
+        1-Columnas
+        */
+        
+        String retorno="";
+        int[] lasCoordenadas = new int[2];
         int cantFilas = this.getTablero().getMatrizTablero().length;
         int cantColumnas = this.getTablero().getMatrizTablero()[0].length;
         //Tomo el primero caracter y si es letra lo referencio a la Fila.
-        String retorno = "Coordenadas OK\n"; //Mensaje de salida.
-        String laFila = null;
-        int laColumna = Integer.MIN_VALUE;
-        int numFila = 0;
+        String laColumna = null;
+        int laFila = Integer.MIN_VALUE;
+        String laFilaStr = null;
+        int numColumn = 0;
         boolean letraOk = false;
+        
+        //El tablero tiene un largo máximo de 5
         HashMap<Integer, String> mapLetras = new HashMap<>();
         mapLetras.put(0, "A");
         mapLetras.put(1, "B");
@@ -209,92 +225,87 @@ public class Partida {
         mapLetras.put(4, "E");
         mapLetras.put(5, "F");
 
-        laFila = coordenada.trim().substring(0, 1);
-        laFila = laFila.toUpperCase();
-
+        laColumna = coordenada.trim().substring(0, 1);
+        laFilaStr = coordenada.trim().substring(1, 2);
+        
         //Valido el primer Caracter de la Fila que sea una letra valida
-        for (int i = 0; i < cantFilas; i++) {
-            if (mapLetras.get(i).equalsIgnoreCase(laFila)) {
+        for (int i = 0; (i < cantColumnas) && !letraOk; i++) {
+            if (mapLetras.get(i).equals(laColumna)) {
                 letraOk = true;
-                numFila = i;
+                numColumn = i;
             }
         }
         if (!letraOk) {
-            retorno = "!!! El valor de la fila es Incorrecto !!! \n";
+            retorno = "Error: El valor de la columna esta fuera de rango.\n";
+        }else{
+            
+            //Valido el primer caracter sea un número y que sea valido.
+            try {
+                laFila = Integer.parseInt(laFilaStr);
+
+            } catch (NumberFormatException e) {
+                retorno = retorno + "Error: El valor de la fila esta fuera de rango.\n";
+
+            }
         }
-
-        //Valido el segundo caracter sea un número y que sea valido.
-        try {
-            laColumna = Integer.parseInt(coordenada.trim().substring(1, 2));
-
-        } catch (Exception e) {
-            retorno = retorno + " !!! El valor de la columna debe ser númerico !!! \n";
-
+        if ((laFila < 1) || (laFila > cantFilas)) {
+            retorno = "Error: El valor de la fila esta fuera de rango.\n";
+        
+        }else{
+            //Si las cordenadas están OK, las devuelvo traducidas en as reales del tablero
+            lasCoordenadas[0] = laFila-1;
+            lasCoordenadas[1] = numColumn;
+            retorno = Integer.toString(lasCoordenadas[0]) + Integer.toString(lasCoordenadas[1]);
         }
-        if ((laColumna < 1) || (laColumna > cantColumnas)) {
-            retorno = " !!! El valor de la columna esta fuera de rango !!! \n";
-        }
-
-        lasCoordendas[0] = numFila;
-        lasCoordendas[1] = laColumna - 1;
-        return lasCoordendas;
+        return retorno;
 
     }
     
     
-    public String validarJugada(String movimiento) {
-        String salida = "";
+    public String validarFormatoJugada(String movimiento) {
+        
+        String retorno = "";
         String aux;
-        int[] coordenadas1;
-        int[] coordenadas2;
-        char ficha;
-        char ficha2;
-        /*
-         Tipos de entradas:
-            - movimiento de fichas:
-                                    A1 A5
-            - jugadas especiales:   
-                                    (X)Abandonar 
-                                    (R)Rotar tablero
-                                    (E)Ofrecer empate
-                                    (Y)Ayuda
-                                    (H)Historial        
-        */
         
-        //Quito los espacios en caso que existan
-        movimiento = movimiento.replaceAll("\\s+", "");
-
-        //Si la jugada es de 4 caracteres, entonces es un movimiento de fichas
+        //Valido el espacio en el 3er caracter
+        //Ya validé que movimiento tenga largo 5.
+        if (movimiento.substring(2, 3).equals(" ")){
         
-        if (movimiento.length() == 5) {
-            boolean movOk;
+            //Quito el espacio
+            movimiento = movimiento.replaceAll("\\s+", "");
 
-            //Coordenadas de primera posición 
-            coordenadas1 = this.ingresarCoordenadas(movimiento.substring(1, 2));
-            
-            //Coordenadas de segunda posición
-            coordenadas2 = this.ingresarCoordenadas(movimiento.substring(4, 5));
-            
-            movOk = moverFicha(coordenadas1[0], coordenadas1[1], coordenadas2[0], coordenadas2[1]);
+            //Si la jugada es de 4 caracteres, entonces es un movimiento correcto de fichas
+            if (movimiento.length() == 4) {
+                boolean movOk = true;
 
-        } else {
+                //Coordenadas de primera posición 
+                aux = this.validarFormatoCoordenadas(movimiento.substring(0, 2));
+                if(aux.trim().length()> 2){ //Si el largo es mayor a las coordenadas entonces trae un error
+                    movOk = false;
+                }else{
 
-            
-      
+                    retorno = aux.trim().substring(0,1) + aux.trim().substring(1,2);
+
+                    //Coordenadas de segunda posición
+                    aux = this.validarFormatoCoordenadas(movimiento.substring(2, 4));
+
+                    if(aux.trim().length()> 2){ //Si el largo es mayor a las coordenadas entonces trae un error
+                        movOk = false;
+                        retorno = aux;
+                    }else{
+                        retorno= "OK" + retorno + aux.trim().substring(0,1) + aux.trim().substring(1,2);
+                    }
+                }
+
+            } else {
+                retorno = "Error: Jugada inválida";
+            }
+        }else{
+            retorno = "Error: No existe espacio entre coordenadas";
         }
-        return salida;
-    }
-
-    //Ingresar movimiento de ficha
-    private boolean moverFicha(int iP1, int jP1, int iP2, int jP2) {
-
-        boolean retorno = false;
-
-        //Ya vienen validadas las coordenadas.
         
-        System.out.println(this.getTablero().getMatrizTablero()[iP1][jP1]);
-        System.out.println(this.getTablero().getMatrizTablero()[iP2][jP2]);
-
+        //Si el ingreso esta bien, retorno la jugada traducida
         return retorno;
     }
 }
+

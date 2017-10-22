@@ -180,18 +180,18 @@ public class drawTablero {
         String colorJug2 = Color.getColor("AZUL");
 
         // Si el rango está entre 11 y 20, entonces es el jugador1
-        // sino es el jugador2
+        // Si el rango está entre 21 y 30 es el jugador2
         int jugador = ficha/10;
         
         if(jugador == 1){
               charFicha = colorJug1;
               ficha -=10;
         }else{
-            if(jugador==0){
-                charFicha = colorNegro;
-            }else{
+            if(jugador==2){
                 charFicha = colorJug2;
                 ficha-=20;
+            }else{
+                charFicha = colorNegro;
             }
         }
         
