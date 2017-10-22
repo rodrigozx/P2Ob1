@@ -201,7 +201,6 @@ public class Partida {
         int laColumna = Integer.MIN_VALUE;
         int numFila = 0;
         boolean letraOk = false;
-        boolean numOk = true;
         HashMap<Integer, String> mapLetras = new HashMap<>();
         mapLetras.put(0, "A");
         mapLetras.put(1, "B");
@@ -230,17 +229,72 @@ public class Partida {
 
         } catch (Exception e) {
             retorno = retorno + " !!! El valor de la columna debe ser númerico !!! \n";
-            numOk = false;
 
         }
         if ((laColumna < 1) || (laColumna > cantColumnas)) {
             retorno = " !!! El valor de la columna esta fuera de rango !!! \n";
-            numOk = false;
         }
 
         lasCoordendas[0] = numFila;
         lasCoordendas[1] = laColumna - 1;
         return lasCoordendas;
 
-    }    
+    }
+    
+    
+    public String validarJugada(String movimiento) {
+        String salida = "";
+        String aux;
+        int[] coordenadas1;
+        int[] coordenadas2;
+        char ficha;
+        char ficha2;
+        /*
+         Tipos de entradas:
+            - movimiento de fichas:
+                                    A1 A5
+            - jugadas especiales:   
+                                    (X)Abandonar 
+                                    (R)Rotar tablero
+                                    (E)Ofrecer empate
+                                    (Y)Ayuda
+                                    (H)Historial        
+        */
+        
+        //Quito los espacios en caso que existan
+        movimiento = movimiento.replaceAll("\\s+", "");
+
+        //Si la jugada es de 4 caracteres, entonces es un movimiento de fichas
+        
+        if (movimiento.length() == 5) {
+            boolean movOk;
+
+            //Coordenadas de primera posición 
+            coordenadas1 = this.ingresarCoordenadas(movimiento.substring(1, 2));
+            
+            //Coordenadas de segunda posición
+            coordenadas2 = this.ingresarCoordenadas(movimiento.substring(4, 5));
+            
+            movOk = moverFicha(coordenadas1[0], coordenadas1[1], coordenadas2[0], coordenadas2[1]);
+
+        } else {
+
+            
+      
+        }
+        return salida;
+    }
+
+    //Ingresar movimiento de ficha
+    private boolean moverFicha(int iP1, int jP1, int iP2, int jP2) {
+
+        boolean retorno = false;
+
+        //Ya vienen validadas las coordenadas.
+        
+        System.out.println(this.getTablero().getMatrizTablero()[iP1][jP1]);
+        System.out.println(this.getTablero().getMatrizTablero()[iP2][jP2]);
+
+        return retorno;
+    }
 }

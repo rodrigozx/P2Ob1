@@ -27,16 +27,19 @@ public class Prueba {
         miMenu.showLogo();
         boolean salir = false;
 
+        /*====================== DATOS DE PRUEBA =====================*/
         miSistema.agregarJugador(new Jugador("Rolo  ", "Rodrigo ", 33, 1, 1, 1));
-        miSistema.agregarJugador(new Jugador("Viky  ", "Virginia", 29, 2, 1, 0));
-        miSistema.agregarJugador(new Jugador("Pepe  ", "Virginia", 29, 0, 1, 0));
-        miSistema.agregarJugador(new Jugador("Pepo  ", "Virginia", 29, 0, 2, 2));        
-        miSistema.agregarJugador(new Jugador("Chacho", "Virginia", 29, 3, 1, 0));
-        miSistema.agregarJugador(new Jugador("Checho", "Virginia", 29, 2, 2, 1));
-        miSistema.agregarJugador(new Jugador("Pepete", "Virginia", 29, 0, 0, 1));
-        miSistema.agregarJugador(new Jugador("Pancho", "Virginia", 29, 1, 5, 3));
-        miSistema.agregarJugador(new Jugador("Pancha", "Virginia", 29, 2, 1, 1));        
-
+        miSistema.agregarJugador(new Jugador("Viky  ", "Viky", 29, 2, 1, 0));
+        miSistema.agregarJugador(new Jugador("Pepe  ", "Pepe", 29, 0, 1, 0));
+        miSistema.agregarJugador(new Jugador("Pepo  ", "Pepo", 29, 0, 2, 2));        
+        miSistema.agregarJugador(new Jugador("Chacho", "Chacho", 29, 3, 1, 0));
+        miSistema.agregarJugador(new Jugador("Checho", "Checho", 29, 2, 2, 1));
+        miSistema.agregarJugador(new Jugador("Pepete", "Pepete", 29, 0, 0, 1));
+        miSistema.agregarJugador(new Jugador("Pancho", "Pancho", 29, 1, 5, 3));
+        miSistema.agregarJugador(new Jugador("Pancha", "Pancha", 29, 2, 1, 1));        
+        
+        /*====================== DATOS DE PRUEBA =====================*/
+        
         do {
             dato = miMenu.showMenuPrincipal(4); //existen 4 opciones
             switch (dato) {
@@ -112,85 +115,42 @@ public class Prueba {
 
     public static void iniciarPartida(int cantJugadores, Sistema miSistema, drawMenu miMenu) {
 
-        int largoMat = 5;
-        String jugada;
-        boolean tableroRotado = false;
-
-        //Veo si es un jugaor sólo
-        //Selección de jugadores y arranque Partida. ******************************************
-        //si existe menos de un jugador registrado
+        int largoMat;//Tamaño de la matriz
+        boolean[] especial = new boolean[5]; /*  (0)Abandonar - 1)Rotar tablero - (2)Ofrecer empate - (3)Ayuda - (4)Historial */
+               
         if (!miSistema.numJugadoresMinimos()) {
+            //si existe menos de 2 jugadores registrados
             miMenu.mostrarMensaje("Error! la cantidad de jugadores registrados", "error");
-            miMenu.mostrarMensaje("es de al menos dos para este tipo de partida", "error");
+            miMenu.mostrarMensaje("Es de al menos dos para este tipo de partida", "error");
 
         } else {
 
+            //Selección de tablero
+            largoMat = seleccionTablero(miMenu);
+
+            //Selección de jugadores y arranque Partida. ******************************************
             Jugador jugador1 = miMenu.seleccionarJugadoresPartida("Primer", miSistema.getListaJugadores(), null);
             Jugador jugador2 = miMenu.seleccionarJugadoresPartida("Segundo",miSistema.getListaJugadores(), jugador1);
             Partida miPartida = new Partida(jugador1, jugador2, 1, largoMat);
 
-            //Mostrar tablero y datos de los jugadores.
+            
+            //CICLO DE PARTIDA ######################################################
             do {
-                //CICLO DE PARTIDA ##################################################
                 //Dibujo del Tablero
                 miMenu.mostrarMensaje(" *** JUEGO  INVERSIONES ***", "");
                 miMenu.mostrarMensaje("(X)Abandonar - (R)Rotar tablero - (E)Ofrecer empate - (Y)Ayuda - (H)Historial", "");
-                drawTablero.draw(miPartida.getTablero().getMatrizTablero(), tableroRotado);//Dibujo el tablero
-                tableroRotado = false;
+                drawTablero.draw(miPartida.getTablero().getMatrizTablero(), especial[1]);//Dibujo el tablero
                 
                 //Dibujo de status de la partida.
                 drawPartida.datos(miPartida);
 
-                //Se ingresa la jugada.
-                jugada = miMenu.ingresarMovimiento();
+                //Se ingresa la jugada, si existe algo especial para motrar se devuelve.
+                especial = pedirJugada(miSistema, miPartida, miMenu);
 
-                //Si un jugador quiere abandonar
-                switch(jugada){
-
-                    case "X": //Abandonar
-                        boolean abandonar;
-                        abandonar = miMenu.confimaMensaje("¿Está seguro que desea abandonar la partida?", "");
-                        if(abandonar){
-                            miMenu.mostrarMensaje(miPartida.abandonar(),"error");
-                        }
-                        break;
-
-                    case "R": //Rotar Tablero
-                        tableroRotado = true;
-                        break;
-                        
-                    case "E": //Ofrecer empate
-                        boolean empate;
-                        empate = miMenu.confimaMensaje("¿Está seguro que desea ofrecer un empate?", "");
-                        if(empate){
-                            miPartida.alternarTurno();
-                            drawPartida.datos(miPartida);
-                            empate = miMenu.confimaMensaje("¿Desea aceptar empatar la partida?", "");
-                            if(empate){
-                                miPartida.setEmpate();
-                                miMenu.mostrarMensaje("La partida terminó empatada!!", "");
-                            }else{
-                                miPartida.alternarTurno();
-                                miMenu.mostrarMensaje("Empate rechazado!!!", "error");
-                            }
-                        }
-                        break;
-                        
-                    case "Y": //Ayuda
-                        break;
-                        
-                    case "H": //Historial
-                        break;
-                        
-                    default: //Si no es una opción especial, entonces es una jugada
-                        miPartida.ingresarJugada(jugada);
-                        //si la jugada no es válida, se muestra el error y vuelve al "do" sin cambiar el turno
-                }
-                
-                //Si nadie Abandona o no hay ganador vuelve al "do"
+                //Si nadie Abandona, no hay empate o no hay ganador vuelve al "do"
             } while (!miPartida.terminoPartida());
-
             //FIN PARTIDA #############################################################
+            
             if (miPartida.terminoPartida()) {
                 
                 //Si hay ganador
@@ -210,7 +170,96 @@ public class Prueba {
         /*
          Fin Partida retorno menú principal
          */
+    }
+    
+     public static boolean[] pedirJugada(Sistema miSistema, Partida laPartida, drawMenu elMenu) {
+        
+        String jugada;
+        boolean[] especial = new boolean[5];  /*  (0)Abandonar - (1)Rotar tablero - (2)Ofrecer empate - (3)Ayuda - (4)Historial */
 
+        jugada = elMenu.ingresarMovimiento();
+        especial = validaEntradaJugada(jugada, laPartida, elMenu);
+        
+        return especial;
+    }
+
+    public static boolean[] validaEntradaJugada(String jugada, Partida laPartida, drawMenu elMenu) {
+         
+        boolean[] especial = new boolean[5];
+
+        //Si la jugada esta vacía o el largo es mayor a 5
+        if (jugada.trim().length() > 5 || jugada.trim().length() < 1) {
+            elMenu.mostrarMensaje("Largo de jugada inválido","error");
+        
+        } else {
+                //Jugadas especiales
+                switch(jugada){
+
+                    case "X": //Abandonar
+                        especial[0] = elMenu.confimaMensaje("¿Está seguro que desea abandonar la partida?", "");
+                        if(especial[0]){
+                            elMenu.mostrarMensaje(laPartida.abandonar(),"error");
+                        }
+                        break;
+
+                    case "R": //Rotar Tablero
+                        especial[1] = true;
+                        break;
+                        
+                    case "E": //Ofrecer Empate
+                        especial[2] = elMenu.confimaMensaje("¿Está seguro que desea ofrecer un empate?", "");
+                        if(especial[2]){
+                            laPartida.alternarTurno();
+                            drawPartida.datos(laPartida);
+                            especial[2] = elMenu.confimaMensaje("¿Desea aceptar empatar la partida?", "");
+                            if(especial[2]){
+                                laPartida.setEmpate();
+                                elMenu.mostrarMensaje("La partida terminó empatada!!", "");
+                            }else{
+                                laPartida.alternarTurno();
+                                elMenu.mostrarMensaje("Empate rechazado!!!", "error");
+                            }
+                        }
+                        break;
+                        
+                    case "Y": //Ayuda
+                        if (especial[3]){
+                            elMenu.mostrarMensaje("PIDIO AYUDA","error");
+                        }
+                        break;
+                        
+                    case "H": //Historial
+                        if (especial[4]){
+                            elMenu.mostrarMensaje("PIDIO HISTORIAL","error");
+                        }
+                        break;
+                        
+                    default: //Si no es una opción especial, entonces es una jugada
+                        laPartida.ingresarJugada(jugada);
+                        //si la jugada no es válida, se muestra el error y vuelve al "do" sin cambiar el turno
+                }            
+
+        }
+        return especial;
+    }
+    
+    public static int seleccionTablero(drawMenu elMenu){//Selección de tablero
+
+        int largoMat;
+        String cabezal = "Por favor seleccione un tamaño de tablero";
+        ArrayList<String> listaOpciones = new ArrayList();
+        listaOpciones.add("Volver");//0 
+        listaOpciones.add("Tablero 3x3");//1 
+        listaOpciones.add("Tablero 5x5");//2
+
+        //El último parámetro muestra o no la opción de volver.
+        largoMat = elMenu.menuOpciones(cabezal, listaOpciones, true);
+        if (largoMat == 1){
+            largoMat = 3;
+        }else{
+            largoMat = 5;
+        }
+        return largoMat;
     }
 
 }

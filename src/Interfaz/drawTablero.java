@@ -15,102 +15,110 @@ public class drawTablero {
     //Recorro la matriz y dibujo
     public static void draw(int[][] matriz, boolean rotado) {
 
-        String colorNegro = Color.getColor("NEGRO");
-        String colorVerde = Color.getColor("VERDE");
-        
-        int[][] mat = new int[matriz.length][matriz[0].length];
-        mat = matriz;
-        boolean arco = false;
-        int largoMatriz = matriz.length;
-        // Tengo que alternar entre una fila con valores de la matriz
-        // y una fila sólo con separadores
-        boolean numFilas = false;
-        int filaImp = largoMatriz;
-        int largoDrawMat = (largoMatriz * 2) + 1;
+        //La matriz a dibujar debe ser impar, sino no puede tener arco.
+        if(matriz.length % 2 !=0 ){
 
-        //Si hay que rotar la matriz
-        if (rotado) {
-            mat = rotarMat(matriz);
-            filaImp = 1;
-        }
+            String colorNegro = Color.getColor("NEGRO");
+            String colorVerde = Color.getColor("VERDE");
 
-        //Salto de línea
-        System.out.println("");
-        
-        //Recorro las filas (son el doble de filas porque tengo de dibujar los separadores)
-        for (int i = 0; i < largoDrawMat; i++) {
+            int[][] mat = new int[matriz.length][matriz[0].length];
+            mat = matriz;
+            boolean arco = false;
+            int largoMatriz = matriz.length;
+            // Tengo que alternar entre una fila con valores de la matriz
+            // y una fila sólo con separadores
+            boolean numFilas = false;
+            int filaImp = largoMatriz;
+            int largoDrawMat = (largoMatriz * 2) + 1;
 
-            // Si es una fila con valores
-            if (numFilas) {
-
-                //Imprimo número de fila
-                System.out.print(colorNegro + filaImp + " ");
-
-                //Imprimo el numero de fila de mayor a menor
-                if(rotado){
-                    filaImp++;
-                }else{
-                    filaImp--;
-                }
-
-                numFilas = false;
-            } else {
-                System.out.print(colorNegro + "  ");
-                numFilas = true;
+            //Si hay que rotar la matriz
+            if (rotado) {
+                mat = rotarMat(matriz);
+                filaImp = 1;
             }
 
-            //Recorro las columnas (son el doble de columnas porque tengo de dibujar los separadores)
-            for (int j = 0; j < largoDrawMat; j++) {
+            //Salto de línea
+            System.out.println("");
 
-                //Me fijo si estoy imprimiendo el arco
-                arco = false;
-                
-                if( ((i==0) || (i==2) || (i==largoDrawMat-1) || (i==largoDrawMat-3)) ){
-                    
-                    if((j==largoDrawMat/2) || (j==(largoDrawMat/2)-1) || (j==(largoDrawMat/2)+1)){
-                        arco = true;
+            //Recorro las filas (son el doble de filas porque tengo de dibujar los separadores)
+            for (int i = 0; i < largoDrawMat; i++) {
+
+                // Si es una fila con valores
+                if (numFilas) {
+
+                    //Imprimo número de fila
+                    System.out.print(colorNegro + filaImp + " ");
+
+                    //Imprimo el numero de fila de mayor a menor
+                    if(rotado){
+                        filaImp++;
+                    }else{
+                        filaImp--;
                     }
-                }else{
-                    if((i==1) || (i==largoDrawMat-2)){
-                        if((j==(largoDrawMat/2)-1) || (j==(largoDrawMat/2)+1)){
+
+                    numFilas = false;
+                } else {
+                    System.out.print(colorNegro + "  ");
+                    numFilas = true;
+                }
+
+                //Recorro las columnas (son el doble de columnas porque tengo de dibujar los separadores)
+                for (int j = 0; j < largoDrawMat; j++) {
+
+                    //Me fijo si estoy imprimiendo el arco
+                    arco = false;
+
+                    if( ((i==0) || (i==2) || (i==largoDrawMat-1) || (i==largoDrawMat-3)) ){
+
+                        if((j==largoDrawMat/2) || (j==(largoDrawMat/2)-1) || (j==(largoDrawMat/2)+1)){
                             arco = true;
+                        }
+                    }else{
+                        if((i==1) || (i==largoDrawMat-2)){
+                            if((j==(largoDrawMat/2)-1) || (j==(largoDrawMat/2)+1)){
+                                arco = true;
+                            }
+                        }
+                    }
+
+                    if(arco){
+                        System.out.print(colorVerde + "*");
+                    }else{
+                        /* Sólo paso el valor de la matriz si imprimo valor
+                           - La columna tiene que ser impar
+                           - la fila tiene que ser impar
+                        */ 
+                        if ( ( (j%2)!=0) && ((i%2)!=0)) {
+                            impValor(i, j, mat[(i-1)/2][(j-1)/2]);
+                        } else {
+                            impValor(i, j, 0);
                         }
                     }
                 }
-                
-                if(arco){
-                    System.out.print(colorVerde + "*");
+
+                //Salto de fila
+                System.out.println();
+            }
+
+            //Despues de recorrer la matriz tengo que imprimir las letras de las columnas
+            System.out.print(colorNegro + "  ");//espacio por número de filas
+            for (int i = 0; i < largoMatriz; i++) {
+
+                if(rotado){
+                    letrasColumna(i, largoMatriz);
                 }else{
-                    /* Sólo paso el valor de la matriz si imprimo valor
-                       - La columna tiene que ser impar
-                       - la fila tiene que ser impar
-                    */ 
-                    if ( ( (j%2)!=0) && ((i%2)!=0)) {
-                        impValor(i, j, mat[(i-1)/2][(j-1)/2]);
-                    } else {
-                        impValor(i, j, 0);
-                    }
+                    //Si no es una matriz rotada, entonces las letras son crecientes
+                    letrasColumna(i, 0);
                 }
             }
-
-            //Salto de fila
-            System.out.println();
-        }
-
-        //Despues de recorrer la matriz tengo que imprimir las letras de las columnas
-        System.out.print(colorNegro + "  ");//espacio por número de filas
-        for (int i = 0; i < largoMatriz; i++) {
+            System.out.println("");
+        
+        }else{
             
-            if(rotado){
-                letrasColumna(i, largoMatriz);
-            }else{
-                //Si no es una matriz rotada, entonces las letras son crecientes
-                letrasColumna(i, 0);
-            }
+            System.out.println("La matiz debe tener un largo de filas impar");
         }
-        System.out.println("");
     }
-
+    
     //Letras de columnas
     private static void letrasColumna(int i, int orden) {
 
