@@ -11,22 +11,6 @@ import java.util.*;
 
 public class Tablero {
 
-    //Matríz de int (cubos)
-    /*
-        Los valores en cada posición de las matrices corresponden a números.
-        La codificación para identificar a que corresponde es la siguiente:
-        - el primer dígito determina el color de la torre, donde:
-            0 = no tiene color
-            1 = corresponde al color del jugador 1
-            2 = corresponde al color del jugador 2
-        
-        - el segundo digito determina la cantidad de cubos en la torre.
-            0 =corresponde a que no existen cubos.
-            5 es el valor máximo posible.
-    
-        Para la identificación de los dígitos se divide entre 10, resultando
-        el entero = al primer dígito y el resto en el segundo.
-     */
     private int[][] matrizTablero;
     private int cantFichasJug1;
     private int cantFichasJug2;
@@ -88,25 +72,25 @@ public class Tablero {
     //Ingresar movimiento de ficha
     public String validarMovimiento(int iP1, int jP1, int iP2, int jP2, int turno) {
 
+        int[] coordOrigen = {iP1, jP1};
+        int[] coordDestino = {iP2, jP2};
         String retorno = "OK";
         int pos1;
         int pos2;
         int jugPos1;
         int jugPos2;
+        int tipoFicha;
 
         //Ya vienen validadas las coordenadas dentro del tablero.
         System.out.println("origen:" + iP1 + jP1);
         System.out.println("destino:" + iP2 + jP2);
         System.out.println("Turno:" + turno);
 
-        pos1 = this.getMatrizTablero()[iP1][jP1];
+        pos1 = this.getMatrizTablero()[coordOrigen[0]][coordOrigen[1]];
         jugPos1 = pos1 / 10;
-        System.out.println("Pos1" + pos1);
-        System.out.println("jugPos1" + jugPos1);
-        pos2 = this.getMatrizTablero()[iP2][jP2];
+        tipoFicha = pos1 - (jugPos1 * 10);
+        pos2 = this.getMatrizTablero()[coordDestino[0]][coordDestino[1]];
         jugPos2 = pos2 / 10;
-        System.out.println("Pos2" + pos2);
-        System.out.println("jugPos2" + jugPos2);
 
         if (jugPos1 != turno || jugPos2 == turno) {
             retorno = "Error:";
@@ -118,6 +102,21 @@ public class Tablero {
             if (jugPos2 == turno) {
                 retorno += "\nLa ficha en la posición final no puede ser del mismo jugador";
             }
+        } else {
+            //valido jugada segun tipo de ficha        
+            switch (tipoFicha) {
+
+                case 1: // Es una Torre
+                    retorno = validoMovimientoTorre(coordOrigen, coordDestino);
+                    break;
+
+                case 2: // Es un Alfil
+                    retorno = validoMovimientoAlfil(coordOrigen, coordDestino);
+                    break;
+                default:
+                    retorno = "Ficha en teblero desconocida";
+            }
+
         }
 
         System.out.println("");
@@ -138,7 +137,7 @@ public class Tablero {
         System.out.println("valorFicha" + valorFicha);
         jug = valorFicha / 10;
         System.out.println("jug" + jug);
-        valorFicha = valorFicha - (10* jug);
+        valorFicha = valorFicha - (10 * jug);
         System.out.println("valorFicha" + valorFicha);
         if (valorFicha == 1) {
             nuevoValor = 2;
@@ -148,7 +147,6 @@ public class Tablero {
         System.out.println("nuevoValor" + nuevoValor);
         nuevoValor = nuevoValor + (10 * jug);
 
-        
         this.getMatrizTablero()[iP1][jP1] = 0;
         this.getMatrizTablero()[iP2][jP2] = nuevoValor;
         System.out.println("nuevovalor" + nuevoValor);
@@ -156,6 +154,44 @@ public class Tablero {
         return retorno;
     }
 
+    private String validoMovimientoTorre(int[] coordOrigen, int[] coordDestino) {
+        String retorno = "OK";
+
+        //El movimiento de torre debe tener la misma fila o la misma columna en origen y destino
+        if((coordOrigen[0] == coordDestino[0]) || (coordOrigen[1] == coordDestino[1])){
+            
+        }else{
+            retorno = "El movimiento no es posible.";
+        }
+        
+        
+        return retorno;
+    }
+
+    private String validoMovimientoAlfil(int[] coordOrigen, int[] coordDestino) {
+        String retorno = "OK";
+
+         //El movimiento de alfil debe tener la distinta fila y distinta columna en origen y destino
+        if((coordOrigen[0] != coordDestino[0]) && (coordOrigen[1] != coordDestino[1])){
+            
+        }else{
+            retorno = "El movimiento no es posible.";
+        }        
+        return retorno;
+    }
+
+    private boolean existeFicha(int[] coordenadas){
+        boolean retorno;
+        int valor = this.getMatrizTablero()[coordenadas[0]][coordenadas[1]];
+        if (valor !=0){
+            retorno = true;
+        }else{
+            retorno = false;
+        }  
+        return retorno;
+    }
+    
+    ////////////para prueba
     public void imprimir() {
         for (int i = 0; i < this.getMatrizTablero().length; i++) {
             for (int j = 0; j < this.getMatrizTablero()[i].length; j++) {
