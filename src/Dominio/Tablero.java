@@ -158,39 +158,96 @@ public class Tablero {
         String retorno = "OK";
 
         //El movimiento de torre debe tener la misma fila o la misma columna en origen y destino
-        if((coordOrigen[0] == coordDestino[0]) || (coordOrigen[1] == coordDestino[1])){
-            
-        }else{
+        if ((coordOrigen[0] == coordDestino[0]) || (coordOrigen[1] == coordDestino[1])) {
+
+        } else {
             retorno = "El movimiento no es posible.";
         }
-        
-        
+
         return retorno;
     }
 
     private String validoMovimientoAlfil(int[] coordOrigen, int[] coordDestino) {
         String retorno = "OK";
 
-         //El movimiento de alfil debe tener la distinta fila y distinta columna en origen y destino
-        if((coordOrigen[0] != coordDestino[0]) && (coordOrigen[1] != coordDestino[1])){
-            
-        }else{
+        //El movimiento de alfil debe tener distinta fila y la columna en origen y destino
+        if ((coordOrigen[0] != coordDestino[0]) && (coordOrigen[1] != coordDestino[1])) {
+
+            //El valor absoluto de la diferencia entre fila origen y fila destino
+            //debe ser igual al valor absoluto de la diferencia dentre columna de origen
+            //y columna de destino
+            int valorAbsFila;
+            int valorAbsColumna;
+
+            valorAbsFila = Math.abs(coordOrigen[0] - coordDestino[0]);
+            valorAbsColumna = Math.abs(coordOrigen[1] - coordDestino[1]);
+
+            //Si son iguales es diagonal
+            //Este valor también es la cantidad de posiciones intermedias.
+            if (valorAbsFila == valorAbsColumna) {
+
+                boolean salir = false;
+                int[] coordConsulta = {0, 0};
+
+                //Recorro las posiciones intermedias de origen y destino
+                for (int i = 0; (i < valorAbsFila) && !salir; i++) {
+
+                    //fila y columna de origen mayor a las de destino
+                    if ((coordOrigen[0] > coordDestino[0]) && (coordOrigen[1] > coordDestino[1])) {
+
+                        coordConsulta[0] = coordOrigen[0] - i;
+                        coordConsulta[1] = coordOrigen[1] - i;
+                        salir = existeFicha(coordConsulta);
+                        System.out.println("consulta coordenada de " + i + ": " + coordConsulta[0] + coordConsulta[1]);
+                        //fila de origen mayor a la de destino
+                    } else if ((coordOrigen[0] > coordDestino[0]) && (coordOrigen[1] < coordDestino[1])) {
+
+                        coordConsulta[0] = coordOrigen[0] - i;
+                        coordConsulta[1] = coordOrigen[1] + i;
+                        salir = existeFicha(coordConsulta);
+                        System.out.println("consulta coordenada de " + i + ": " + coordConsulta[0] + coordConsulta[1]);
+                        //columna de origen mayor a la de destino
+                    } else if ((coordOrigen[0] < coordDestino[0]) && (coordOrigen[1] > coordDestino[1])) {
+
+                        coordConsulta[0] = coordOrigen[0] + i;
+                        coordConsulta[1] = coordOrigen[1] - i;
+                        salir = existeFicha(coordConsulta);
+                        System.out.println("consulta coordenada de " + i + ": " + coordConsulta[0] + coordConsulta[1]);
+                        //fila y columna de destino mayores a la de origen
+                    } else if ((coordOrigen[0] < coordDestino[0]) && (coordOrigen[1] < coordDestino[1])) {
+
+                        coordConsulta[0] = coordOrigen[0] + i;
+                        coordConsulta[1] = coordOrigen[1] + i;
+                        salir = existeFicha(coordConsulta);
+                        System.out.println("consulta coordenada de " + i + ": " + coordConsulta[0] + coordConsulta[1]);
+                    } else {
+                        //No debería entrar en esta opción.
+                        retorno = "Error: inconsistencia de filas y columnas en movimiento de alfil.";
+                    }
+                }
+                if (salir) {
+                    retorno = "Existe ficha en la posición " + coordConsulta[0] + coordConsulta[1];
+                }
+            } else {
+                retorno = "El movimiento no es diagonal.";
+            }
+        } else {
             retorno = "El movimiento no es posible.";
-        }        
+        }
         return retorno;
     }
 
-    private boolean existeFicha(int[] coordenadas){
+    private boolean existeFicha(int[] coordenadas) {
         boolean retorno;
         int valor = this.getMatrizTablero()[coordenadas[0]][coordenadas[1]];
-        if (valor !=0){
+        if (valor != 0) {
             retorno = true;
-        }else{
+        } else {
             retorno = false;
-        }  
+        }
         return retorno;
     }
-    
+
     ////////////para prueba
     public void imprimir() {
         for (int i = 0; i < this.getMatrizTablero().length; i++) {
