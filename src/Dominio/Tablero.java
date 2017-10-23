@@ -82,10 +82,6 @@ public class Tablero {
         int tipoFicha;
 
         //Ya vienen validadas las coordenadas dentro del tablero.
-        System.out.println("origen:" + iP1 + jP1);
-        System.out.println("destino:" + iP2 + jP2);
-        System.out.println("Turno:" + turno);
-
         pos1 = this.getMatrizTablero()[coordOrigen[0]][coordOrigen[1]];
         jugPos1 = pos1 / 10;
         tipoFicha = pos1 - (jugPos1 * 10);
@@ -114,14 +110,14 @@ public class Tablero {
                     retorno = validoMovimientoAlfil(coordOrigen, coordDestino);
                     break;
                 default:
-                    retorno = "Ficha en teblero desconocida";
+                    //No debería entrar en ésta opción
+                    retorno = "Ficha en tablero desconocida";
             }
-
+            //Valido que si el destino tiene ficha se pueda comer porque está en el arco
+            if(jugPos2!=0){
+               retorno = validoComer(coordDestino);
+            }
         }
-
-        System.out.println("");
-        this.imprimir();
-
         return retorno;
     }
 
@@ -159,9 +155,49 @@ public class Tablero {
 
         //El movimiento de torre debe tener la misma fila o la misma columna en origen y destino
         if ((coordOrigen[0] == coordDestino[0]) || (coordOrigen[1] == coordDestino[1])) {
+            int valorAbs;
+            boolean salir = false;
+            int[] coordConsulta = {0,0};
+            
+            if((coordOrigen[0] == coordDestino[0])){
+                valorAbs = Math.abs(coordOrigen[0] - coordDestino[0]);
+                
+                for (int i = 1; (i <= valorAbs) && !salir; i++) {
 
+                    if (coordOrigen[1] > coordDestino[1]){
+                        coordConsulta[0] = coordOrigen[0];
+                        coordConsulta[1] = coordOrigen[1] - i;
+                        salir = existeFicha(coordConsulta);
+                    }else{
+                        //(coordOrigen[1] < coordDestino[1])
+                        coordConsulta[0] = coordOrigen[0];
+                        coordConsulta[1] = coordOrigen[1] + i;
+                        salir = existeFicha(coordConsulta);
+                    }
+                }
+            }else{
+                //(coordOrigen[1] == coordDestino[1])
+                valorAbs = Math.abs(coordOrigen[0] - coordDestino[0]);
+                
+                for (int i = 1; (i < valorAbs) && !salir; i++) {
+
+                    if (coordOrigen[0] > coordDestino[0]){
+                        coordConsulta[0] = coordOrigen[0] -i;
+                        coordConsulta[1] = coordOrigen[1];
+                        salir = existeFicha(coordConsulta);
+                    }else{
+                        //(coordOrigen[1] < coordDestino[1])
+                        coordConsulta[0] = coordOrigen[0] +i;
+                        coordConsulta[1] = coordOrigen[1];
+                        salir = existeFicha(coordConsulta);
+                    }
+                }
+            }
+            if (salir) {
+                retorno = "Existe ficha bloqueando el movimiento";
+            }
         } else {
-            retorno = "El movimiento no es posible.";
+            retorno = "El movimiento no es horizontal o vertical.";
         }
 
         return retorno;
@@ -182,7 +218,7 @@ public class Tablero {
             valorAbsFila = Math.abs(coordOrigen[0] - coordDestino[0]);
             valorAbsColumna = Math.abs(coordOrigen[1] - coordDestino[1]);
             System.out.println("valorAbsFila " + valorAbsFila);
-            System.out.println("valorAbsColumna" +  valorAbsColumna);
+            System.out.println("valorAbsColumna" + valorAbsColumna);
             //Si son iguales es diagonal
             //Este valor también es la cantidad de posiciones intermedias.
             if (valorAbsFila == valorAbsColumna) {
@@ -191,7 +227,7 @@ public class Tablero {
                 int[] coordConsulta = {0, 0};
 
                 //Recorro las posiciones intermedias de origen y destino
-                for (int i = 0; (i < valorAbsFila) && !salir; i++) {
+                for (int i = 1; (i < valorAbsFila) && !salir; i++) {
 
                     //fila y columna de origen mayor a las de destino
                     if ((coordOrigen[0] > coordDestino[0]) && (coordOrigen[1] > coordDestino[1])) {
@@ -199,35 +235,32 @@ public class Tablero {
                         coordConsulta[0] = coordOrigen[0] - i;
                         coordConsulta[1] = coordOrigen[1] - i;
                         salir = existeFicha(coordConsulta);
-                        System.out.println("consulta coordenada de " + i + ": " + coordConsulta[0] + coordConsulta[1]);
+
                         //fila de origen mayor a la de destino
                     } else if ((coordOrigen[0] > coordDestino[0]) && (coordOrigen[1] < coordDestino[1])) {
 
                         coordConsulta[0] = coordOrigen[0] - i;
                         coordConsulta[1] = coordOrigen[1] + i;
                         salir = existeFicha(coordConsulta);
-                        System.out.println("consulta coordenada de " + i + ": " + coordConsulta[0] + coordConsulta[1]);
                         //columna de origen mayor a la de destino
                     } else if ((coordOrigen[0] < coordDestino[0]) && (coordOrigen[1] > coordDestino[1])) {
 
                         coordConsulta[0] = coordOrigen[0] + i;
                         coordConsulta[1] = coordOrigen[1] - i;
                         salir = existeFicha(coordConsulta);
-                        System.out.println("consulta coordenada de " + i + ": " + coordConsulta[0] + coordConsulta[1]);
                         //fila y columna de destino mayores a la de origen
                     } else if ((coordOrigen[0] < coordDestino[0]) && (coordOrigen[1] < coordDestino[1])) {
 
                         coordConsulta[0] = coordOrigen[0] + i;
                         coordConsulta[1] = coordOrigen[1] + i;
                         salir = existeFicha(coordConsulta);
-                        System.out.println("consulta coordenada de " + i + ": " + coordConsulta[0] + coordConsulta[1]);
                     } else {
                         //No debería entrar en esta opción.
                         retorno = "Error: inconsistencia de filas y columnas en movimiento de alfil.";
                     }
                 }
                 if (salir) {
-                    retorno = "Existe ficha en la posición " + coordConsulta[0] + coordConsulta[1];
+                    retorno = "Existe ficha bloqueando el movimiento";
                 }
             } else {
                 retorno = "El movimiento no es diagonal.";
@@ -241,22 +274,34 @@ public class Tablero {
     private boolean existeFicha(int[] coordenadas) {
         boolean retorno;
         int valor = this.getMatrizTablero()[coordenadas[0]][coordenadas[1]];
-        if (valor != 0) {
-            retorno = true;
-        } else {
-            retorno = false;
-        }
+
+        retorno = (valor != 0);
         return retorno;
     }
 
-    ////////////para prueba
-    public void imprimir() {
-        for (int i = 0; i < this.getMatrizTablero().length; i++) {
-            for (int j = 0; j < this.getMatrizTablero()[i].length; j++) {
-                System.out.print(this.getMatrizTablero()[i][j] + " ");
+    private String validoComer(int[] destino) {
+        String retorno = "Error: No se pueden comer fichas fuera de los arcos";
+        int largoMatriz;
+        int columnaArco;
+        int filaArcoJug1 = 0;
+        int filaArcoJug2;
+
+        //Solo se puede comer en los arcos.
+        largoMatriz = this.getMatrizTablero().length;
+        filaArcoJug2 = largoMatriz - 1;
+
+        //Al ser impar siempre es la mitad.
+        //La división se queda con el entero correcto porque 
+        //el largo ya tiene el +1.
+        columnaArco = (largoMatriz / 2);
+
+        if (destino[0] == filaArcoJug1 || destino[0] == filaArcoJug2) {
+            if (destino[1] == columnaArco) {
+                retorno = "OK";
             }
-            System.out.println("");
         }
+
+        return retorno;
     }
 
 }

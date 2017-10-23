@@ -191,7 +191,6 @@ public class Partida {
             retorno = this.getTablero().validarMovimiento(iP1, jP1, iP2, jP2, this.getTurno());
             
             if (retorno.substring(0, 2).equals("OK")){
-                System.out.println("Retorno ingresarJugada:" + retorno);
                 //Validar movimiento
                 retorno = this.getTablero().validarMovimiento(iP1, jP1, iP2, jP2, this.getTurno());
                 
@@ -318,4 +317,3 @@ public class Partida {
         return retorno;
     }
 }
-
