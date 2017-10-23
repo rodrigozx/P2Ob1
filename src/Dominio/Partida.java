@@ -22,7 +22,7 @@ public class Partida {
     private Jugador jugador2;
     private int estado;
     private int turno;
-
+    private ArrayList <String> hitorial = new ArrayList();
 
     /* CONSTRUCTOR POR PARAMETROS *************************************/
     public Partida(Jugador jugador1, Jugador jugador2, int turno, int largoMat) {
@@ -75,6 +75,15 @@ public class Partida {
         this.estado = estadoP;
     }
 
+    public ArrayList<String> getHitorial() {
+        return hitorial;
+    }
+
+    public void setHitorial(ArrayList<String> hitorial) {
+        this.hitorial = hitorial;
+    }
+    
+    
     /* METODOS *************************************/
    public void alternarTurno() {
         if (this.getTurno() == 1) {
@@ -91,13 +100,7 @@ public class Partida {
          2- Ganador Jugador2
          3- Hay Empate
          */
-        boolean termino;
-        if (this.getEstado()!= 0){
-            termino = true;
-        }else{
-            termino = false;
-        }
-        return termino;
+        return this.getEstado()!= 0; //Si termino devuelve true
     }
 
     public void setEmpate() {
@@ -205,10 +208,18 @@ public class Partida {
                 
                 if (retorno.substring(0, 2).equals("OK")){
                     retorno = this.getTablero().moverFicha(iP1, jP1, iP2, jP2);
+                    
+                    if (retorno.substring(0, 2).equals("OK")){
+                        
+                        //Si el movimiento fue correcto alterno el turno;
+                        this.alternarTurno();
+                        
+                        //Grabo la jugada en el historial
+                        this.getHitorial().add(jugada);
+                    }
                 }else{
                     //Devuelvo el retorno con el error;    
                 }
-                this.alternarTurno();
             }else{
                 //Devuelvo el retorno con el error;
             }

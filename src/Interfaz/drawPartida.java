@@ -8,6 +8,7 @@
 package Interfaz;
 
 import Dominio.Partida;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -29,8 +30,6 @@ public class drawPartida {
 
     //Muestra Datos Jugadores
     private static void datosJugadores(Partida unaPartida) {
-//        System.out.print("\nJugador 1: " + unaPartida.getJugador1().getAlias() + " - Cubos: " + unaPartida.getTablero().getCantCubosJug1());
-//        System.out.print("\nJugador 2: " + unaPartida.getJugador2().getAlias() + " - Cubos: " + unaPartida.getTablero().getCantCubosJug2());
 
         System.out.print("\nJUEGA: ");
         if (unaPartida.getTurno() == 1) {
@@ -39,6 +38,34 @@ public class drawPartida {
         if (unaPartida.getTurno() == 2) {
             System.out.println(Color.getColor("AZUL") + unaPartida.getJugador2().getAlias());
         }
+    }
+    
+     //Muestra Datos Jugadores
+    public static void mostrarHistorial(Partida unaPartida) {
+
+        ArrayList<String> historial;
+        System.out.print("\nHistorial de partidas: \n");
+        historial = unaPartida.getHitorial();
+        boolean jug1 = true;
+        
+        if(historial.size() > 0){
+            
+            for (int i = 1; i < historial.size(); i++) {
+                
+                if(jug1){
+                    System.out.print("Jugador 1 ");
+                    jug1 =false;
+                }else{
+                    System.out.print("Jugador 2 "); 
+                    jug1 =true;
+                }
+                System.out.println("- jugada " + i + ": " + historial.get(i).trim());
+            }
+            
+        }else{
+            System.out.println("No existen jugadas anteriores.");
+        }
+        System.out.println("");
     }
 
 }

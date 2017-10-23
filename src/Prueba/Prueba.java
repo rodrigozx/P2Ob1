@@ -176,7 +176,7 @@ public class Prueba {
      public static boolean[] pedirJugada(Sistema miSistema, Partida laPartida, drawMenu elMenu) {
         
         String jugada;
-        boolean[] especial = new boolean[5];  /*  (0)Abandonar - (1)Rotar tablero - (2)Ofrecer empate - (3)Ayuda - (4)Historial */
+        boolean[] especial;  /*  (0)Abandonar - (1)Rotar tablero - (2)Ofrecer empate - (3)Ayuda - (4)Historial */
 
         jugada = elMenu.ingresarMovimiento();
         especial = validaEntradaJugada(jugada, laPartida, elMenu);
@@ -268,7 +268,7 @@ public class Prueba {
                         case "H": //Historial
                             especial[4] = true;
                             if (especial[4]){
-                                elMenu.mostrarMensaje("PIDIO HISTORIAL","error");
+                                drawPartida.mostrarHistorial(laPartida);
                             }
                             break;
 
