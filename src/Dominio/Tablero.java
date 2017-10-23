@@ -107,6 +107,7 @@ public class Tablero {
         jugPos2 = pos2 / 10;
         System.out.println("Pos2" + pos2);
         System.out.println("jugPos2" + jugPos2);
+
         if (jugPos1 != turno || jugPos2 == turno) {
             retorno = "Error:";
             if (jugPos1 == 0) {
@@ -117,31 +118,47 @@ public class Tablero {
             if (jugPos2 == turno) {
                 retorno += "\nLa ficha en la posición final no puede ser del mismo jugador";
             }
-        } else {
-
         }
-        
+
         System.out.println("");
         this.imprimir();
-        
+
         return retorno;
     }
 
     public String moverFicha(int iP1, int jP1, int iP2, int jP2) {
 
-        String retorno = "OK";
-
-        this.getMatrizTablero();
         //Ya vienen validadas las coordenadas.
-        System.out.println("origen:" + iP1 + jP1);
-        System.out.println("destino:" + iP2 + jP2);
+        String retorno = "OK";
+        int valorFicha;
+        int jug;
+        int nuevoValor;
+
+        valorFicha = this.getMatrizTablero()[iP1][jP1];
+        System.out.println("valorFicha" + valorFicha);
+        jug = valorFicha / 10;
+        System.out.println("jug" + jug);
+        valorFicha = valorFicha - (10* jug);
+        System.out.println("valorFicha" + valorFicha);
+        if (valorFicha == 1) {
+            nuevoValor = 2;
+        } else {
+            nuevoValor = 1;
+        }
+        System.out.println("nuevoValor" + nuevoValor);
+        nuevoValor = nuevoValor + (10 * jug);
+
+        
+        this.getMatrizTablero()[iP1][jP1] = 0;
+        this.getMatrizTablero()[iP2][jP2] = nuevoValor;
+        System.out.println("nuevovalor" + nuevoValor);
 
         return retorno;
     }
 
     public void imprimir() {
-        for (int i = 0; i < this.matrizTablero.length; i++) {
-            for (int j = 0; j < this.matrizTablero[i].length; j++) {
+        for (int i = 0; i < this.getMatrizTablero().length; i++) {
+            for (int j = 0; j < this.getMatrizTablero()[i].length; j++) {
                 System.out.print(this.getMatrizTablero()[i][j] + " ");
             }
             System.out.println("");

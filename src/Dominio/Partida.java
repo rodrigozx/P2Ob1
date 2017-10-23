@@ -192,7 +192,17 @@ public class Partida {
             
             if (retorno.substring(0, 2).equals("OK")){
                 System.out.println("Retorno ingresarJugada:" + retorno);
-//                this.alternarTurno();
+                //Validar movimiento
+                retorno = this.getTablero().validarMovimiento(iP1, jP1, iP2, jP2, this.getTurno());
+                
+                if (retorno.substring(0, 2).equals("OK")){
+                    retorno = this.getTablero().moverFicha(iP1, jP1, iP2, jP2);
+                }else{
+                    //Devuelvo el retorno con el error;    
+                }
+                this.alternarTurno();
+            }else{
+                //Devuelvo el retorno con el error;
             }
         }
 

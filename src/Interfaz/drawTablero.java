@@ -31,6 +31,9 @@ public class drawTablero {
             int filaImp = largoMatriz;
             int largoDrawMat = (largoMatriz * 2) + 1;
 
+            //Cambio de filas para vista
+            mat = transformView(matriz);
+            
             //Si hay que rotar la matriz
             if (rotado) {
                 mat = rotarMat(matriz);
@@ -41,7 +44,7 @@ public class drawTablero {
             System.out.println("");
 
             //Recorro las filas (son el doble de filas porque tengo de dibujar los separadores)
-            for (int i = 0; i < largoDrawMat; i++) {
+            for (int i = 0 ; i < largoDrawMat; i++) {
 
                 // Si es una fila con valores
                 if (numFilas) {
@@ -206,6 +209,7 @@ public class drawTablero {
                 charFicha += " ";
                 break;
         }
+       
         System.out.print( charFicha);
     }
 
@@ -226,4 +230,19 @@ public class drawTablero {
         return mat;
     }
 
+    private static int[][] transformView(int[][] matriz) {
+        //Roto solo los valores de la celda de la matriz
+        // para poder mostrarlo como se solicita
+        int[][] mat = new int[matriz.length][matriz[0].length];
+
+        //Recorro la nueva matriz hacia delante
+        for (int i = 0; i< mat.length; i++) {
+                
+               mat[i]= matriz[matriz.length-i-1];
+        }
+        
+        return mat;
+    }
+    
 }
+
