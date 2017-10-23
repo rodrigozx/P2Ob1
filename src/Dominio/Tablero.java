@@ -12,16 +12,12 @@ import java.util.*;
 public class Tablero {
 
     private int[][] matrizTablero;
-    private int cantFichasJug1;
-    private int cantFichasJug2;
 
     /* CONSTRUCTOR POR PARAMETROS *************************************/
     public Tablero(int[][] matrizTablero) {
         this.matrizTablero = matrizTablero;
 
         //La cantidad de fichas de cada jugador es igual al largo de la matriz
-        this.cantFichasJug1 = matrizTablero.length;
-        this.cantFichasJug2 = matrizTablero.length;
         tableroInicial();
     }
 
@@ -32,22 +28,6 @@ public class Tablero {
 
     public void setMatrizTablero(int[][] matrizTablero) {
         this.matrizTablero = matrizTablero;
-    }
-
-    public int getCantFichasJug1() {
-        return this.cantFichasJug1;
-    }
-
-    public int getCantFichasJug2() {
-        return this.cantFichasJug2;
-    }
-
-    public void setCantFichasJug1(int cantFichasJug1) {
-        this.cantFichasJug1 = cantFichasJug1;
-    }
-
-    public void setCantFichasJug2(int cantFichasJug2) {
-        this.cantFichasJug2 = cantFichasJug2;
     }
 
     /* METODOS *************************************/
@@ -69,7 +49,7 @@ public class Tablero {
         }
     }
 
-    //Ingresar movimiento de ficha
+    //Ingresar movimiento de ficha.
     public String validarMovimiento(int iP1, int jP1, int iP2, int jP2, int turno) {
 
         int[] coordOrigen = {iP1, jP1};

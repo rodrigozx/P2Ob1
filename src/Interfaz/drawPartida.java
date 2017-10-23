@@ -53,13 +53,13 @@ public class drawPartida {
             for (int i = 1; i < historial.size(); i++) {
                 
                 if(jug1){
-                    System.out.print("Jugador 1 ");
+                    System.out.print("jugada " + i + "- Rojo: ");
                     jug1 =false;
                 }else{
-                    System.out.print("Jugador 2 "); 
+                    System.out.print("jugada " + i + "- Azul: "); 
                     jug1 =true;
                 }
-                System.out.println("- jugada " + i + ": " + historial.get(i).trim());
+                System.out.println(historial.get(i).trim());
             }
             
         }else{

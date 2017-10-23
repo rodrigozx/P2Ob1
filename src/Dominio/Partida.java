@@ -11,12 +11,14 @@ import java.util.*;
 
 public class Partida {
 
-    /*Estado de la partida.
+    /*
+     Estado de la partida.
      0- No hay estado
      1- Ganador Jugador1
      2- Ganador Jugador2
      3- Hay Empate
-     */
+    */
+    
     private Tablero tablero;
     private Jugador jugador1;
     private Jugador jugador2;
