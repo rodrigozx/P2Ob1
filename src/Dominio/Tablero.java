@@ -74,12 +74,13 @@ public class Tablero {
 
         int[] coordOrigen = {iP1, jP1};
         int[] coordDestino = {iP2, jP2};
-        String retorno = "OK";
         int pos1;
         int pos2;
         int jugPos1;
         int jugPos2;
         int tipoFicha;
+        String retorno;
+        boolean defender;
 
         //Ya vienen validadas las coordenadas dentro del tablero.
         pos1 = this.getMatrizTablero()[coordOrigen[0]][coordOrigen[1]];
@@ -88,36 +89,43 @@ public class Tablero {
         pos2 = this.getMatrizTablero()[coordDestino[0]][coordDestino[1]];
         jugPos2 = pos2 / 10;
 
-        if (jugPos1 != turno || jugPos2 == turno) {
-            retorno = "Error:";
-            if (jugPos1 == 0) {
-                retorno += "La posición inicial está vacía";
+        defender = movDefenderOk(turno, coordDestino);        
+        if(defender){
+            if (jugPos1 != turno || jugPos2 == turno) {
+                retorno = "Error:";
+                if (jugPos1 == 0) {
+                    retorno += "La posición inicial está vacía";
+                } else {
+                    retorno += "La ficha de la posición inicial no corresponde al jugador";
+                }
+                if (jugPos2 == turno) {
+                    retorno += "\nLa ficha en la posición final no puede ser del mismo jugador";
+                }
             } else {
-                retorno += "La ficha de la posición inicial no corresponde al jugador";
-            }
-            if (jugPos2 == turno) {
-                retorno += "\nLa ficha en la posición final no puede ser del mismo jugador";
-            }
-        } else {
-            //valido jugada segun tipo de ficha        
-            switch (tipoFicha) {
+                //valido jugada segun tipo de ficha        
+                switch (tipoFicha) {
 
-                case 1: // Es una Torre
-                    retorno = validoMovimientoTorre(coordOrigen, coordDestino);
-                    break;
+                    case 1: // Es una Torre
+                        retorno = validoMovimientoTorre(coordOrigen, coordDestino);
+                        break;
 
-                case 2: // Es un Alfil
-                    retorno = validoMovimientoAlfil(coordOrigen, coordDestino);
-                    break;
-                default:
-                    //No debería entrar en ésta opción
-                    retorno = "Ficha en tablero desconocida";
+                    case 2: // Es un Alfil
+                        retorno = validoMovimientoAlfil(coordOrigen, coordDestino);
+                        break;
+                    default:
+                        //No debería entrar en ésta opción
+                        retorno = "Ficha en tablero desconocida";
+                }
+                //Valido que si el destino tiene ficha se pueda comer porque está en el arco
+                if (jugPos2 != 0) {
+                    retorno = validoComer(coordDestino);
+                }
             }
-            //Valido que si el destino tiene ficha se pueda comer porque está en el arco
-            if(jugPos2!=0){
-               retorno = validoComer(coordDestino);
-            }
+            
+        }else{
+            retorno="Error: Debe realizar un movimiento para defender su arco.";
         }
+        
         return retorno;
     }
 
@@ -130,22 +138,17 @@ public class Tablero {
         int nuevoValor;
 
         valorFicha = this.getMatrizTablero()[iP1][jP1];
-        System.out.println("valorFicha" + valorFicha);
         jug = valorFicha / 10;
-        System.out.println("jug" + jug);
         valorFicha = valorFicha - (10 * jug);
-        System.out.println("valorFicha" + valorFicha);
         if (valorFicha == 1) {
             nuevoValor = 2;
         } else {
             nuevoValor = 1;
         }
-        System.out.println("nuevoValor" + nuevoValor);
         nuevoValor = nuevoValor + (10 * jug);
 
         this.getMatrizTablero()[iP1][jP1] = 0;
         this.getMatrizTablero()[iP2][jP2] = nuevoValor;
-        System.out.println("nuevovalor" + nuevoValor);
 
         return retorno;
     }
@@ -157,37 +160,37 @@ public class Tablero {
         if ((coordOrigen[0] == coordDestino[0]) || (coordOrigen[1] == coordDestino[1])) {
             int valorAbs;
             boolean salir = false;
-            int[] coordConsulta = {0,0};
-            
-            if((coordOrigen[0] == coordDestino[0])){
+            int[] coordConsulta = {0, 0};
+
+            if ((coordOrigen[0] == coordDestino[0])) {
                 valorAbs = Math.abs(coordOrigen[0] - coordDestino[0]);
-                
+
                 for (int i = 1; (i <= valorAbs) && !salir; i++) {
 
-                    if (coordOrigen[1] > coordDestino[1]){
+                    if (coordOrigen[1] > coordDestino[1]) {
                         coordConsulta[0] = coordOrigen[0];
                         coordConsulta[1] = coordOrigen[1] - i;
                         salir = existeFicha(coordConsulta);
-                    }else{
+                    } else {
                         //(coordOrigen[1] < coordDestino[1])
                         coordConsulta[0] = coordOrigen[0];
                         coordConsulta[1] = coordOrigen[1] + i;
                         salir = existeFicha(coordConsulta);
                     }
                 }
-            }else{
+            } else {
                 //(coordOrigen[1] == coordDestino[1])
                 valorAbs = Math.abs(coordOrigen[0] - coordDestino[0]);
-                
+
                 for (int i = 1; (i < valorAbs) && !salir; i++) {
 
-                    if (coordOrigen[0] > coordDestino[0]){
-                        coordConsulta[0] = coordOrigen[0] -i;
+                    if (coordOrigen[0] > coordDestino[0]) {
+                        coordConsulta[0] = coordOrigen[0] - i;
                         coordConsulta[1] = coordOrigen[1];
                         salir = existeFicha(coordConsulta);
-                    }else{
+                    } else {
                         //(coordOrigen[1] < coordDestino[1])
-                        coordConsulta[0] = coordOrigen[0] +i;
+                        coordConsulta[0] = coordOrigen[0] + i;
                         coordConsulta[1] = coordOrigen[1];
                         salir = existeFicha(coordConsulta);
                     }
@@ -217,8 +220,7 @@ public class Tablero {
 
             valorAbsFila = Math.abs(coordOrigen[0] - coordDestino[0]);
             valorAbsColumna = Math.abs(coordOrigen[1] - coordDestino[1]);
-            System.out.println("valorAbsFila " + valorAbsFila);
-            System.out.println("valorAbsColumna" + valorAbsColumna);
+
             //Si son iguales es diagonal
             //Este valor también es la cantidad de posiciones intermedias.
             if (valorAbsFila == valorAbsColumna) {
@@ -304,4 +306,39 @@ public class Tablero {
         return retorno;
     }
 
+    private boolean movDefenderOk(int turno, int[]coordDestino){
+        boolean retorno = false;
+        int valorArco = 0;
+        int filaArco =0;
+        int columnaArco = this.getMatrizTablero().length/2;
+        
+        switch(turno){
+            
+            case 1:
+                filaArco = 0;
+                valorArco = this.getMatrizTablero()[filaArco][columnaArco];
+                break;
+                
+            case 2:
+                filaArco = this.getMatrizTablero().length-1;
+                valorArco = this.getMatrizTablero()[filaArco][columnaArco];
+                break;
+                
+            default:
+                break;
+        }
+
+        //Si el arco tiene ficha y no es del jugador
+        if(valorArco!= 0 && (valorArco/10 != turno)){
+            //Tiene que defender, asi que veo si el movimiento tiene como destino el arco
+            if ((coordDestino[0] == filaArco) && (coordDestino[1] == columnaArco)){
+                //Si esta ok porque la jugada tiene como destino el arco devuelve true
+                retorno = true;
+            }
+        }else{//sino no importa si el destino es el arco
+            retorno=true;
+        }
+        
+        return retorno;
+    }
 }

@@ -132,19 +132,24 @@ public class Partida {
     
     public String setGanador(int ganador) {
         String retorno;
-        
-        if(ganador == 1){
-            this.getJugador1().setPartidas(this.getJugador1().getPartidas()[0]+1, this.getJugador1().getPartidas()[1], this.getJugador1().getPartidas()[0]);
-            this.getJugador2().setPartidas(this.getJugador2().getPartidas()[0], this.getJugador2().getPartidas()[1]+1, this.getJugador2().getPartidas()[0]);
-            this.setEstado(1);            
-        }else if(ganador == 2){
-            this.getJugador1().setPartidas(this.getJugador1().getPartidas()[0], this.getJugador1().getPartidas()[1]+1, this.getJugador1().getPartidas()[0]);
-            this.getJugador2().setPartidas(this.getJugador2().getPartidas()[0]+1, this.getJugador2().getPartidas()[1], this.getJugador2().getPartidas()[0]);
-            this.setEstado(2);
-        }else{
-            retorno = "Error. No hay ganador";
-        }
         retorno = "OK";
+        
+        switch (ganador) {
+            case 1:
+                this.getJugador1().setPartidas(this.getJugador1().getPartidas()[0]+1, this.getJugador1().getPartidas()[1], this.getJugador1().getPartidas()[0]);
+                this.getJugador2().setPartidas(this.getJugador2().getPartidas()[0], this.getJugador2().getPartidas()[1]+1, this.getJugador2().getPartidas()[0]);
+                this.setEstado(1);
+                break;
+            case 2:
+                this.getJugador1().setPartidas(this.getJugador1().getPartidas()[0], this.getJugador1().getPartidas()[1]+1, this.getJugador1().getPartidas()[0]);
+                this.getJugador2().setPartidas(this.getJugador2().getPartidas()[0]+1, this.getJugador2().getPartidas()[1], this.getJugador2().getPartidas()[0]);
+                this.setEstado(2);
+                break;
+            default:
+                retorno = "Error. No hay ganador";
+                break;
+        }
+
         return retorno;
     }
 
@@ -163,12 +168,16 @@ public class Partida {
         
         Jugador ganador;
         
-        if(this.estado == 1 ){
-            ganador = this.getJugador1();
-        }else if(this.estado == 2){
-            ganador = this.getJugador2();
-        }else{
-            ganador = null;
+        switch (this.estado) {
+            case 1:
+                ganador = this.getJugador1();
+                break;
+            case 2:
+                ganador = this.getJugador2();
+                break;
+            default:
+                ganador = null;
+                break;
         }
         return ganador;
     }
@@ -219,9 +228,10 @@ public class Partida {
         int cantFilas = this.getTablero().getMatrizTablero().length;
         int cantColumnas = this.getTablero().getMatrizTablero()[0].length;
         //Tomo el primero caracter y si es letra lo referencio a la Fila.
-        String laColumna = null;
+        String laColumna;
         int laFila = Integer.MIN_VALUE;
-        String laFilaStr = null;
+        
+        String laFilaStr;
         int numColumn = 0;
         boolean letraOk = false;
         
