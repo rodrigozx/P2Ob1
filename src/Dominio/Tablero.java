@@ -181,7 +181,8 @@ public class Tablero {
 
             valorAbsFila = Math.abs(coordOrigen[0] - coordDestino[0]);
             valorAbsColumna = Math.abs(coordOrigen[1] - coordDestino[1]);
-
+            System.out.println("valorAbsFila " + valorAbsFila);
+            System.out.println("valorAbsColumna" +  valorAbsColumna);
             //Si son iguales es diagonal
             //Este valor también es la cantidad de posiciones intermedias.
             if (valorAbsFila == valorAbsColumna) {
