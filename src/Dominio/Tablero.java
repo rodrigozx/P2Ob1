@@ -60,7 +60,7 @@ public class Tablero {
         int jugPos2;
         int tipoFicha;
         String retorno;
-        boolean defender;
+        boolean defenderOk;
 
         //Ya vienen validadas las coordenadas dentro del tablero.
         pos1 = this.getMatrizTablero()[coordOrigen[0]][coordOrigen[1]];
@@ -69,8 +69,8 @@ public class Tablero {
         pos2 = this.getMatrizTablero()[coordDestino[0]][coordDestino[1]];
         jugPos2 = pos2 / 10;
 
-        defender = movDefenderOk(turno, coordDestino);        
-        if(defender){
+        defenderOk = movDefenderOk(turno, coordDestino);        
+        if(defenderOk){
             if (jugPos1 != turno || jugPos2 == turno) {
                 retorno = "Error:";
                 if (jugPos1 == 0) {
@@ -97,7 +97,7 @@ public class Tablero {
                         retorno = "Ficha en tablero desconocida";
                 }
                 //Valido que si el destino tiene ficha se pueda comer porque está en el arco
-                if (jugPos2 != 0) {
+                if ( (retorno.equals("OK")) && (jugPos2 != 0)) {
                     retorno = validoComer(coordDestino);
                 }
             }
