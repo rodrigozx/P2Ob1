@@ -68,4 +68,12 @@ public class drawPartida {
         System.out.println("");
     }
 
+    public static void printListaMovimientosPosibles(ArrayList<String> lista){
+        System.out.println("\n Lista de Movimientos:");
+        for (int i = 0; i < lista.size(); i++) {
+            System.out.println(lista.get(i));
+        }
+        System.out.println("");
+    }
+    
 }

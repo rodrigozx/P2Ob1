@@ -7,6 +7,7 @@
  */
 package Dominio;
 
+import Interfaz.drawPartida;
 import java.util.*;
 
 public class Partida {
@@ -97,11 +98,7 @@ public class Partida {
 
     public boolean terminoPartida() {
          /*Valida el estado de la partida.
-         0- No hay estado
-         1- Ganador Jugador1
-         2- Ganador Jugador2
-         3- Hay Empate
-         */
+         0- No hay estado, 1- Ganador Jugador1, 2- Ganador Jugador2, 3- Hay Empate */
         return this.getEstado()!= 0; //Si termino devuelve true
     }
 
@@ -246,51 +243,52 @@ public class Partida {
         
         String laFilaStr;
         int numColumn = 0;
-        boolean letraOk = false;
+        boolean letraOk;
         
-        //El tablero tiene un largo máximo de 5
-        HashMap<Integer, String> mapLetras = new HashMap<>();
-        mapLetras.put(0, "A");
-        mapLetras.put(1, "B");
-        mapLetras.put(2, "C");
-        mapLetras.put(3, "D");
-        mapLetras.put(4, "E");
-        mapLetras.put(5, "F");
-
         laColumna = coordenada.trim().substring(0, 1);
         laFilaStr = coordenada.trim().substring(1, 2);
         
-        //Valido el primer Caracter de la Fila que sea una letra valida
-        for (int i = 0; (i < cantColumnas) && !letraOk; i++) {
-            if (mapLetras.get(i).equals(laColumna)) {
-                letraOk = true;
-                numColumn = i;
-            }
-        }
-        if (!letraOk) {
-            retorno = "Error: El valor de la columna esta fuera de rango.\n";
-        }else{
-            
-            //Valido el primer caracter sea un número y que sea valido.
-            try {
-                laFila = Integer.parseInt(laFilaStr);
+             
+        letraOk = validarFilaNum(laFilaStr);
+        if(letraOk){
+            letraOk = false;
 
-            } catch (NumberFormatException e) {
-                retorno = retorno + "Error: El valor de la fila esta fuera de rango.\n";
-
+            //Valido el primer Caracter de la columna que sea una letra valida
+            for (int i = 0; (i < cantColumnas) && !letraOk; i++) {
+                
+                //busco en el mapeo de letras si me da un número dentro de la matriz
+                if (devuelvoLetraMapColumnas(i).equals(laColumna)) {
+                    letraOk = true;
+                    numColumn = i;
+                }
             }
-        }
-        if ((laFila < 1) || (laFila > cantFilas)) {
-            retorno = "Error: El valor de la fila esta fuera de rango.\n";
-        
+            if (!letraOk) {
+                retorno = "Error: El valor de la columna esta fuera de rango.\n";
+            }else{
+
+                //Valido el primer caracter sea un número y que sea valido.
+                try {
+                    laFila = Integer.parseInt(laFilaStr);
+
+                } catch (NumberFormatException e) {
+                    retorno = retorno + "Error: El valor de la fila esta fuera de rango.\n";
+
+                }
+
+                if ((laFila < 1) || (laFila > cantFilas)) {
+                    retorno = "Error: El valor de la fila esta fuera de rango.\n";
+
+                }else{
+                    //Si las cordenadas están OK, las devuelvo traducidas en as reales del tablero
+                    lasCoordenadas[0] = laFila-1;
+                    lasCoordenadas[1] = numColumn;
+                    retorno = Integer.toString(lasCoordenadas[0]) + Integer.toString(lasCoordenadas[1]);
+                }
+            }
         }else{
-            //Si las cordenadas están OK, las devuelvo traducidas en as reales del tablero
-            lasCoordenadas[0] = laFila-1;
-            lasCoordenadas[1] = numColumn;
-            retorno = Integer.toString(lasCoordenadas[0]) + Integer.toString(lasCoordenadas[1]);
+            retorno = "Error: La fila ingresada no es un número.";
         }
         return retorno;
-
     }
     
     
@@ -308,12 +306,11 @@ public class Partida {
 
             //Si la jugada es de 4 caracteres, entonces es un movimiento correcto de fichas
             if (movimiento.length() == 4) {
-                boolean movOk = true;
 
                 //Coordenadas de primera posición 
                 aux = this.validarFormatoCoordenadas(movimiento.substring(0, 2));
                 if(aux.trim().length()> 2){ //Si el largo es mayor a las coordenadas entonces trae un error
-                    movOk = false;
+                    retorno =aux;
                 }else{
 
                     retorno = aux.trim().substring(0,1) + aux.trim().substring(1,2);
@@ -322,7 +319,6 @@ public class Partida {
                     aux = this.validarFormatoCoordenadas(movimiento.substring(2, 4));
 
                     if(aux.trim().length()> 2){ //Si el largo es mayor a las coordenadas entonces trae un error
-                        movOk = false;
                         retorno = aux;
                     }else{
                         retorno= "OK" + retorno + aux.trim().substring(0,1) + aux.trim().substring(1,2);
@@ -338,5 +334,81 @@ public class Partida {
         
         //Si el ingreso esta bien, retorno la jugada traducida
         return retorno;
+    }
+    
+    public void checkEstado(){
+        //validación de quien gana se hace al revés, teniendo en cuenta
+        //que ya se cambió el turno una vez ingresada la jugada correctamente
+        
+        int[] coord={0,0};
+        boolean statusOk;
+        int oponente;
+        ArrayList<String> listaMovimientosPosibles = new ArrayList();
+        
+        if(this.getTurno() ==1){
+            oponente = 2;
+        }else{
+            oponente =1;
+        }
+        
+        //Debo revisar que no tenga una ficha del contrario en su arco
+        //le paso unas coordenadas que no estan en el arco
+        //si devuelve false quiere decir que aún hay una ficha contraria
+        //dentro del arco, por lo que el jugador de turno perdió
+        statusOk = this.getTablero().movDefenderOk(oponente,coord );
+        
+        if(!statusOk){
+            this.setGanador(this.getTurno());
+        }else{
+            
+            //Calculo movimientos posibles para el otro jugador
+            listaMovimientosPosibles = this.getTablero().movimientosPosibles(this.getTurno());
+            
+            //debuggg
+            drawPartida.printListaMovimientosPosibles(listaMovimientosPosibles);
+            
+            //Si el oponente no tiene movimientos válidos, entonces
+            //gana el jugador de turno. (al revés según anotación del comienzo)
+            if(listaMovimientosPosibles.isEmpty()){
+                this.setGanador(oponente);
+            }
+        }
+    }
+    
+    //Hashmap que traduce letras en integer para las columnas 
+    public HashMap<Integer, String> listaMapLetras(){
+        HashMap<Integer, String> mapLetras =new HashMap<>();
+        mapLetras.put(0, "A");
+        mapLetras.put(1, "B");
+        mapLetras.put(2, "C");
+        mapLetras.put(3, "D");
+        mapLetras.put(4, "E");
+        mapLetras.put(5, "F");
+        
+        return mapLetras;
+    }
+
+    public String devuelvoLetraMapColumnas(int pos){
+        String retorno;
+        
+        if (pos < this.getTablero().getMatrizTablero().length){
+            retorno = listaMapLetras().get(pos);
+        }else{
+            retorno="Error";
+        }
+        
+        return retorno;
+        
+    }
+ 
+    private static boolean validarFilaNum(String cadena){
+	try {
+		
+            int num = Integer.parseInt(cadena);
+            return num>=0;
+
+	} catch (NumberFormatException nfe){
+		return false;
+	}
     }
 }

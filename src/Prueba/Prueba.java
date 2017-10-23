@@ -147,7 +147,11 @@ public class Prueba {
 
                 //Se ingresa la jugada, si existe algo especial para motrar se devuelve.
                 especial = pedirJugada(miSistema, miPartida, miMenu);
-
+                
+                //Revisar el estado de la partida, si hay que setear un ganador
+                miPartida.checkEstado();
+                
+                
                 //Si nadie Abandona, no hay empate o no hay ganador vuelve al "do"
             } while (!miPartida.terminoPartida());
             //FIN PARTIDA #############################################################

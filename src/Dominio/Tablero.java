@@ -285,8 +285,9 @@ public class Tablero {
 
         return retorno;
     }
+    
 
-    private boolean movDefenderOk(int turno, int[]coordDestino){
+    public boolean movDefenderOk(int turno, int[]coordDestino){
         boolean retorno = false;
         int valorArco = 0;
         int filaArco =0;
@@ -321,4 +322,70 @@ public class Tablero {
         
         return retorno;
     }
+    
+    public ArrayList<String> movimientosPosibles(int turno){
+        
+        ArrayList<String> listaMovimientos = new ArrayList();
+        int valorCasillero;
+        String retorno;
+        String coordenadas;
+        
+        for (int i = 0; i < this.getMatrizTablero().length; i++) {
+            for (int j = 0; j<this.getMatrizTablero()[i].length; j++) {
+                
+                valorCasillero = this.getMatrizTablero()[i][j];
+                if(valorCasillero/10 == turno){
+
+                    for (int k = 0; k < this.getMatrizTablero().length; k++) {
+                        for (int l = 0; l < this.getMatrizTablero()[k].length; l++) {
+                            retorno = this.validarMovimiento(i, j, k, l, turno);
+                            coordenadas = ""+i+""+j+""+k+""+l;
+                            if(retorno.equals("OK")){
+                                listaMovimientos.add(coordenadas.trim());
+                            }
+                        }
+                    }
+
+                }
+                
+            }
+        }
+        
+        //Reviso el arco del jugador a ver si hay una ficha
+        int largoMatriz;
+        int columnaArco;
+        int filaArco;
+        int valorArco;
+        
+        largoMatriz = this.getMatrizTablero().length;
+        if (turno == 1){
+            filaArco = 0;
+        }else{
+            filaArco = largoMatriz - 1;
+        }
+        columnaArco = (largoMatriz / 2);
+        
+        valorArco = this.getMatrizTablero()[filaArco][columnaArco];
+
+        //Si no tiene una ficha del jugador o está vacía
+        if ( (valorArco/10 != turno) && (valorArco/10 !=0) ){
+            int filaMov;
+            int columnaMov;
+            
+            //Hay una ficha contraria en el arco, debo revisar que entre la 
+            //lista de movimientos posibles haya un movimiento con ese destino.
+            for (int i = 0; i < listaMovimientos.size(); i++) {
+                
+                filaMov = Integer.parseInt(listaMovimientos.get(i).substring(2,3));
+                columnaMov = Integer.parseInt(listaMovimientos.get(i).substring(3,4));
+                
+                //Si no es un movimiento para defender el arco, lo quito.
+                if ( (filaMov != filaArco) || (columnaArco != columnaMov)){
+                    listaMovimientos.remove(i);
+                }
+            }
+        }
+        return listaMovimientos;
+    }
+    
 }
